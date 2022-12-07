@@ -1,6 +1,8 @@
 {
-	"C_Cpp.errorSquiggles": "Disabled",
 	"files.associations": {
+		"iosfwd": "cpp",
+		"string": "cpp",
+		"vector": "cpp",
 		"__bit_reference": "cpp",
 		"__bits": "cpp",
 		"__config": "cpp",
@@ -15,6 +17,7 @@
 		"__split_buffer": "cpp",
 		"__string": "cpp",
 		"__threading_support": "cpp",
+		"__tree": "cpp",
 		"__tuple": "cpp",
 		"algorithm": "cpp",
 		"array": "cpp",
@@ -39,12 +42,12 @@
 		"functional": "cpp",
 		"initializer_list": "cpp",
 		"ios": "cpp",
-		"iosfwd": "cpp",
 		"iostream": "cpp",
 		"istream": "cpp",
 		"iterator": "cpp",
 		"limits": "cpp",
 		"locale": "cpp",
+		"map": "cpp",
 		"memory": "cpp",
 		"mutex": "cpp",
 		"new": "cpp",
@@ -54,14 +57,12 @@
 		"sstream": "cpp",
 		"stdexcept": "cpp",
 		"streambuf": "cpp",
-		"string": "cpp",
 		"string_view": "cpp",
 		"system_error": "cpp",
 		"tuple": "cpp",
 		"type_traits": "cpp",
 		"typeinfo": "cpp",
 		"unordered_map": "cpp",
-		"utility": "cpp",
-		"vector": "cpp"
+		"utility": "cpp"
 	}
 }

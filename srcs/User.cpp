@@ -43,8 +43,19 @@ User::User(const User& user)
 
 
 std::string User::get_nickname() const { return _nickname; }
-
+std::string User::get_username() const { return _username; }
+std::string User::get_hostname() const { return _hostname; }
+std::string User::get_servername() const { return _servername; }
+std::string User::get_realname() const { return _realname; }
 bool User::get_registered() const { return _is_registered; }
+
+void User::set_nickname(std::string str) { _nickname = str; }
+void User::set_username(std::string str) { _username = str; }
+void User::set_hostname(std::string str) { _hostname = str; }
+void User::set_servername(std::string str) { _servername = str; }
+void User::set_realname(std::string str) { _realname = str; }
+void User::set_registered(bool b) { _is_registered = b; }
+
 
 
 void User::send_msg(std::string msg)

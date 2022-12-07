@@ -29,17 +29,6 @@ int main(int argc, char *argv[]) {
 	server.execute();
 
 
-	// {
-	// 	std::vector<std::string> v = ft_split(std::string(buffer), '\n');
-	// 	for (std::vector<std::string>::iterator it = v.begin(); it != v.end(); ++it) {
-	// 		std::cout << *it << '\n';
-	// 		std::vector<std::string> vc = ft_split(*it, ' ');
-	// 		std::cout << vc[0] << '\n';
-	// }
-		// write(client_socket, "CAP * LS", strlen("hello!!!"));
-		// char p[1000] = ":ircserv 001 han :Welcome to the Internet Relay Network han\r\n";
-		// if (i == 1)
-		// 	write(client_socket, p, strlen(p));
 
 
 	return 0;

@@ -10,6 +10,7 @@ SRC_LIST					=		main.cpp\
 									Server.cpp\
 									Command.cpp\
 									Util.cpp
+									
 
 
 SRC							=		$(addprefix $(SRC_DIR), $(SRC_LIST))

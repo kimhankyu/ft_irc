@@ -110,14 +110,19 @@ void Server::echo_message()
 void Server::execute_command(std::string str, const int fd)
 {
 	std::vector<std::string> v = ft_split(str, ' ');
+	std::vector<std::string>::iterator it = v.end() - 1;
+	std::size_t pos = it->find("\r");
+	*it = it->substr(0, pos);
+
 	if (v[0] == "PASS") {
 		cmd_pass(v, fd);
-	} 
-	// else if (v[0] == "NICK") {
-
-	// } else if (v[0] == "USER") {
-
-	// }
+	} else if (v[0] == "NICK") {
+		cmd_nick(v, fd);
+	} else if (v[0] == "USER") {
+		cmd_user(v, fd);
+	} else if (v[0] == "PING") {
+		cmd_pong(v, fd);
+	}
 
 
 
