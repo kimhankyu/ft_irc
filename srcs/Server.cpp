@@ -109,9 +109,21 @@ void Server::echo_message()
 
 void Server::execute_command(std::string str, const int fd)
 {
-	std::vector<std::string> v = ft_split(str, ' ');
+	std::vector<std::string> ve;
+	size_t pos = str.find_first_of(':');
+	if (pos == str.npos) {
+		ve.push_back(str);
+	} else {
+		ve.push_back(str.substr(0, pos));
+		ve.push_back(str.substr(pos + 1));
+	}
+	std::vector<std::string> v = ft_split(ve[0], ' ');
+	if (ve.size() != 1) {
+		v.push_back(ve[1]);
+	}
+
 	std::vector<std::string>::iterator it = v.end() - 1;
-	std::size_t pos = it->find("\r");
+	pos = it->find("\r");
 	*it = it->substr(0, pos);
 
 	if (v[0] == "PASS") {
@@ -121,7 +133,15 @@ void Server::execute_command(std::string str, const int fd)
 	} else if (v[0] == "USER") {
 		cmd_user(v, fd);
 	} else if (v[0] == "PING") {
-		cmd_pong(v, fd);
+		cmd_ping(v, fd);
+	} else if (v[0] == "PRIVMSG") {
+		cmd_privmsg(v, fd);
+	} else if (v[0] == "NOTICE") {
+		cmd_notice(v, fd);
+	} else if (v[0] == "MODE") {
+		cmd_mode(v, fd);
+	} else if (v[0] == "OPER") {
+		cmd_oper(v, fd);
 	}
 
 
@@ -130,15 +150,12 @@ void Server::execute_command(std::string str, const int fd)
 
 }
 
-
-
-
 void Server::execute()
 {
 	int n;
 	while (true) {
 		n = poll(_fds.data(), _fds.size(), TIMEOUT);
-//poll err check
+//TODO - poll err check
 
 		if (_fds[0].revents & POLLIN) { accept_client(); }
 		echo_message();

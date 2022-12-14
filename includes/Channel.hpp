@@ -12,18 +12,19 @@ class Channel
 private:
 	std::string	_name;
 	std::string _key;
-	std::string	_type;
 	std::string	_topic;
-	std::vector<User> operators;
-	std::vector<User> userlist;
+	std::vector<User> _operators;
+	std::vector<User> _userlist;
+
+	//u.push_back()
+	//u[0] u[1][2][3][4]
+	//u[0][1][2][3]
 
 	Channel();
 
 public:
-	// JOIN <channel> <key> 검증
-	void join(User newuser);
 
-	// channel 객체 생성 전에 name validity 검증해야 함
+	
 	Channel(std::string name, std::string key, User oper);
 	~Channel();
 };

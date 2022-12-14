@@ -9,7 +9,8 @@ SRC_LIST					=		main.cpp\
 									User.cpp\
 									Server.cpp\
 									Command.cpp\
-									Util.cpp
+									Util.cpp\
+									Channel.cpp
 									
 
 

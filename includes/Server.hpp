@@ -11,9 +11,12 @@
 #include <vector>
 #include <map>
 #include "User.hpp"
+#include "Channel.hpp"
 
-#define TIMEOUT 1000
-#define MSG_LEN 512
+#define TIMEOUT		1000
+#define MSG_LEN		512
+#define OPER_NICK	"hankkim"
+#define OPER_PASS	"4242"
 
 class Server
 {
@@ -27,6 +30,7 @@ private:
 	std::vector<struct pollfd> _fds;
 	std::map<int, User> _users;
 	std::map<int, std::string> _nicknames;
+	std::map<std::string, Channel> _channels;
 
 
 	void socket_init();
@@ -38,14 +42,36 @@ private:
 	/* Command.cpp */
 	void cmd_pass(std::vector<std::string> &v, const int fd);
 	void cmd_nick(std::vector<std::string> &v, const int fd);
-	bool find_nickname(std::string str);
+	std::map<int, std::string>::iterator find_nickname(std::string str);
 	void cmd_user(std::vector<std::string> &v, const int fd);
-	void cmd_pong(std::vector<std::string> &v, const int fd);
+	void cmd_ping(std::vector<std::string> &v, const int fd);
+	void cmd_oper(std::vector<std::string> &v, const int fd);
 
+// channel 객체 생성 전에 name validity 검증해야 함
+	/*
+	quit
+	*/
 
+/*
+Channel Operations
+JOIN
+PART
 
+	TOPIC
+	INVITE
+	KICK
+*/
 
+	void cmd_join(std::vector<std::string> &v, const int fd);
+	void cmd_part(std::vector<std::string> &v, const int fd);
 
+	void cmd_mode(std::vector<std::string> &v, const int fd);
+
+	void cmd_privmsg(std::vector<std::string> &v, const int fd);
+	void cmd_notice(std::vector<std::string> &v, const int fd);
+
+/* Operator Messages */
+	void cmd_kill(std::vector<std::string> &v, const int fd);
 
 public:
 	Server(int port, std::string password);
