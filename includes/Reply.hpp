@@ -13,11 +13,12 @@
 #define ERR_ERRONEUSNICKNAME(nick, badNick)				":ircserv 432 " + nick + " " + badNick + " :Erroneus nickname\n"
 #define ERR_NICKNAMEINUSE(currentNick, desiredNick)		":ircserv 433 " + currentNick + " " + desiredNick + " :Nickname is already in use\n"
 // #define ERR_NICKCOLLISION(nick)	":ircserv 436 " //우리는 다른 서버에서 중복인지 체크를 하지 않는다.
+#define ERR_NOTONCHANNEL(nick, channel)					":ircserv 442 " + nick + " " + channel + " :You're not on that channel\n"
 
 #define ERR_NEEDMOREPARAMS(nick, command)				":ircserv 461 " + nick + " " + command + " :Not enough parameters\n"
 #define ERR_ALREADYREGISTRED(nick)						":ircserv 462 " + nick + " :You may not reregister\n"
 #define ERR_PASSWDMISMATCH(nick)						":ircserv 464 " + nick + " :Password incorrect\n"
-
+#define ERR_CHANOPRIVSNEEDED(nick, channel)				":ircserv 482 " + nick + " " + channel + " :You're not channel operator\n"
 
 /* command REPLY */
 #define RPL_NICK(oldNick, newNick)						":" + oldNick + " NICK " + newNick + "\n"

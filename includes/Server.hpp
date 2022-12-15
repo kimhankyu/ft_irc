@@ -65,6 +65,8 @@ PART
 	void cmd_join(std::vector<std::string> &v, const int fd);
 	void cmd_part(std::vector<std::string> &v, const int fd);
 
+
+
 	void cmd_mode(std::vector<std::string> &v, const int fd);
 
 	void cmd_privmsg(std::vector<std::string> &v, const int fd);

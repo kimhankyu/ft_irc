@@ -90,7 +90,7 @@ void User::set_mode(int mode, int flag) {
 	}
 }
 
-void User::send_msg(std::string msg)
+void User::send_msg(const std::string msg)
 {
 	write(_fd, msg.c_str(), msg.size());
 }

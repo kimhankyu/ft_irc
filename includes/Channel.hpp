@@ -16,17 +16,22 @@ private:
 	std::vector<User> _operators;
 	std::vector<User> _userlist;
 
-	//u.push_back()
-	//u[0] u[1][2][3][4]
-	//u[0][1][2][3]
+
 
 	Channel();
 
 public:
-
-	
 	Channel(std::string name, std::string key, User oper);
 	~Channel();
+
+	int get_user_num();
+	bool is_user(const User u);
+	bool is_operator(const User u);
+	void cmd_part(User u);
+	
+	void send_msg(const std::string str);
+	//send_msg
+
 };
 
 #endif

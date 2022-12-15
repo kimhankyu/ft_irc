@@ -50,7 +50,7 @@ public:
 
 
 
-	void send_msg(std::string msg);
+	void send_msg(const std::string msg);
 
 };
 

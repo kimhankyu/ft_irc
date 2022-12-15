@@ -123,19 +123,33 @@ void Server::cmd_join(std::vector<std::string> &v, const int fd)
 
 void Server::cmd_part(std::vector<std::string> &v, const int fd)
 {
-	//v[0] == part
-	//v[1] == channel,channel,
-	//v[1]을 ','기준으로 스플릿
-	//loop
-	//1. 실제 있는 채널인지 확인
-	//2. 해당 채널에서 유저가 존재하는지 확인
-	//여러 가능성 고려하기 -> 1. 유저가 oper인 경우, 2. 해당 유저가 마지막이었던 경우
+	if (v.size() <= 1) {
+		_users[fd].send_msg(ERR_NEEDMOREPARAMS(_users[fd].get_nickname(), v[0]));
+		return ;
+	}
 	std::vector<std::string> chanList = ft_split(v[1], ',');
-	for (std::vector<std::string>::iterator it = chanList.begin(); it != chanList.end(); ++it)
-	{
-		if (_channels.find(*it) != _channels.end())
-		{
-			if (_channel[*it]._member)
+	std::vector<std::string> reasonList;
+	int reasonIndex = 0;
+	if (v.size() == 3) {
+		reasonList = ft_split(v[2], ',');
+	}
+	for (std::vector<std::string>::iterator it = chanList.begin(); it != chanList.end(); ++it) {
+		if (_channels.find(*it) != _channels.end()) {
+			if (_channels[*it].is_user(_users[fd])) {
+				_channels[*it].cmd_part(_users[fd]);
+				std::string msg = ":" + _users[fd].get_nickname() + " PART " + *it;
+				if (reasonIndex < reasonList.size()) {
+					msg += " " + reasonList[reasonIndex++];
+				}
+				_channels[*it].send_msg(msg + "\n");
+				if (_channels[*it].get_user_num() == 0) {
+					_channels.erase(*it);
+				}
+			} else {
+				_users[fd].send_msg(ERR_NOTONCHANNEL(_users[fd].get_nickname(), *it));
+			}
+		} else {
+			_users[fd].send_msg(ERR_NOSUCHCHANNEL(_users[fd].get_nickname(), *it));
 		}
 	}
 }
@@ -144,51 +158,61 @@ void Server::cmd_mode(std::vector<std::string> &v, const int fd)
 {
 	if (v.size() < 2) {
 		_users[fd].send_msg(ERR_NEEDMOREPARAMS(_users[fd].get_nickname(), v[0]));
+		return;
 	}
 	if (v[1][0] == '#') {
-		// channel mode
 		// TODO channel mode
 		if (_channels.find(v[1]) == _channels.end()) {
 			_users[fd].send_msg(ERR_NOSUCHCHANNEL(_users[fd].get_nickname(), v[1]));
-		} else {
-			if (v.size() == )
+			return ;
+		}
+		if (v.size() == 2) { // <modestring> 없는 경우
+// RPL_CHANNELMODEIS
+			return;
+		}
+		if (!_channels[v[1]].is_operator(_users[fd])) {
+			_users[fd].send_msg(ERR_CHANOPRIVSNEEDED(_users[fd].get_nickname(), v[1]));
+			return ;
 		}
 
-		
+
+
+
+
+
 	} else {
-		// user mode
 		std::map<int, std::string>::iterator it = find_nickname(v[1]);
 		if (it == _nicknames.end()) {
 			_users[fd].send_msg(ERR_NOSUCHNICK(_users[fd].get_nickname(), v[1]));
+			return ;
+		}
+		if (v[1] != _nicknames[fd]) {
+			_users[fd].send_msg(ERR_USERSDONTMATCH(_users[fd].get_nickname()));
+			return;
+		}
+		if (v.size() == 2) {
+			_users[fd].send_msg(RPL_UMODEIS(_users[fd].get_nickname(), _users[fd].get_mode()));
 		} else {
-			if (v[1] != _nicknames[fd]) {
-				_users[fd].send_msg(ERR_USERSDONTMATCH(_users[fd].get_nickname()));
-			} else {
-				if (v.size() == 2) {
-					_users[fd].send_msg(RPL_UMODEIS(_users[fd].get_nickname(), _users[fd].get_mode()));
+			int flag = 0;
+			for (size_t i = 0; i < v[2].size(); ++i) {
+				if (v[2][i] == '+') { flag = 0; continue; }
+				else if (v[2][i] == '-') { flag = 1; continue; }
+				if (v[2][i] == 'i') {
+					_users[fd].set_mode(INVISIBLE_USER_MODE, flag);
+				} else if (v[2][i] == 'o') {
+					_users[fd].set_mode(OPER_USER_MODE, flag);
+				} else if (v[2][i] == 'O') {
+					_users[fd].set_mode(LOCAL_OPER_USER_MODE, flag);
+				} else if (v[2][i] == 'r') {
+					_users[fd].set_mode(REGISTERED_USER_MODE, flag);
+				} else if (v[2][i] == 'w') {
+					_users[fd].set_mode(WALLOPS_USER_MODE, flag);
 				} else {
-					int flag = 0;
-					for (size_t i = 0; i < v[2].size(); ++i) {
-						if (v[2][i] == '+') { flag = 0; continue; }
-						else if (v[2][i] == '-') { flag = 1; continue; }
-						if (v[2][i] == 'i') {
-							_users[fd].set_mode(INVISIBLE_USER_MODE, flag);
-						} else if (v[2][i] == 'o') {
-							_users[fd].set_mode(OPER_USER_MODE, flag);
-						} else if (v[2][i] == 'O') {
-							_users[fd].set_mode(LOCAL_OPER_USER_MODE, flag);
-						} else if (v[2][i] == 'r') {
-							_users[fd].set_mode(REGISTERED_USER_MODE, flag);
-						} else if (v[2][i] == 'w') {
-							_users[fd].set_mode(WALLOPS_USER_MODE, flag);
-						} else {
-							_users[fd].send_msg(ERR_UMODEUNKNOWNFLAG(_users[fd].get_nickname()));
-							return ;
-						}
-					}
-					_users[fd].send_msg(":ircserv MODE " + v[1] + " " + v[2] + "\n");
+					_users[fd].send_msg(ERR_UMODEUNKNOWNFLAG(_users[fd].get_nickname()));
+					return ;
 				}
 			}
+			_users[fd].send_msg(":ircserv MODE " + v[1] + " " + v[2] + "\n");
 		}
 	}
 }
