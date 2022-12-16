@@ -13,10 +13,11 @@
 #include "User.hpp"
 #include "Channel.hpp"
 
-#define TIMEOUT		1000
-#define MSG_LEN		512
-#define OPER_NICK	"hankkim"
-#define OPER_PASS	"4242"
+#define TIMEOUT				1000
+#define MSG_LEN				512
+#define CHAN_USER_LIMIT		200
+#define OPER_NICK			"hankkim"
+#define OPER_PASS			"4242"
 
 class Server
 {
@@ -52,19 +53,15 @@ private:
 	quit
 	*/
 
-/*
-Channel Operations
-JOIN
-PART
 
-	TOPIC
-	INVITE
-	KICK
-*/
 
 	void cmd_join(std::vector<std::string> &v, const int fd);
 	void cmd_part(std::vector<std::string> &v, const int fd);
+	void cmd_topic(std::vector<std::string> &v, const int fd);
 
+	// INVITE
+
+	void cmd_kick(std::vector<std::string> &v, const int fd);
 
 
 	void cmd_mode(std::vector<std::string> &v, const int fd);

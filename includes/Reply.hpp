@@ -8,6 +8,7 @@
 #define ERR_NOSUCHNICK(nick, nonExistant)				":ircserv 401 " + nick + " " + nonExistant + " :No such nick/channel\n"
 #define ERR_NOSUCHSERVER(nick, severName)				":ircserv 402 " + nick + " " + serverName + " :No such server\n"
 #define ERR_NOSUCHCHANNEL(nick, channel)				":ircserv 403 " + nick + " " + channel + " :No such channel\n"
+#define ERR_TOOMANYCHANNELS(nick, channel)				":ircserv 405 " + nick + " " + channel + " :You have joined too many channels\n"
 #define ERR_NOORIGIN									":ircserv 431 :No origin specified\n"
 #define ERR_NONICKNAMEGIVEN								":ircserv 431 :No nickname given\n"
 #define ERR_ERRONEUSNICKNAME(nick, badNick)				":ircserv 432 " + nick + " " + badNick + " :Erroneus nickname\n"

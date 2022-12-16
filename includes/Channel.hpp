@@ -5,8 +5,6 @@
 #include <vector>
 #include "User.hpp"
 
-#define CHAN_LEN 200
-
 class Channel
 {
 private:
@@ -25,12 +23,14 @@ public:
 	~Channel();
 
 	int get_user_num();
+	std::string get_key() const;
 	bool is_user(const User u);
 	bool is_operator(const User u);
-	void cmd_part(User u);
+	void del_user(User u);
+	void add_user(const User u);
 	
 	void send_msg(const std::string str);
-	//send_msg
+
 
 };
 

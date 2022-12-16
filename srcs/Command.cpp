@@ -104,26 +104,47 @@ void Server::cmd_oper(std::vector<std::string> &v, const int fd)
 	}
 }
 
-/*
-JOIN
-PART
+//TODO - QUIT
 
-	TOPIC
-	INVITE
-	KICK
-*/
 
 void Server::cmd_join(std::vector<std::string> &v, const int fd)
 {
-	/*
-	invite-only 인 경우에 사용자를 초대
-	*/
-	
+	if (v.size() < 2 || v.size() > 3) {
+		_users[fd].send_msg(ERR_NEEDMOREPARAMS(_users[fd].get_nickname(), v[0]));
+		return ;
+	}
+	std::vector<std::string> chanList = ft_split(v[1], ',');
+	std::vector<std::string> keyList;
+	if (v.size() == 3) {
+		keyList = ft_split(v[2], ',');
+	}
+	int ketIndex = 0;
+	for (std::vector<std::string>::iterator it = chanList.begin(); it != chanList.end(); ++it) {
+		if (_users[fd].is_channel_user(_channels[*it])) {
+			continue;
+		}
+		if (_users[fd].get_channels_num() >= CHAN_USER_LIMIT) {
+			_users[fd].send_msg(ERR_TOOMANYCHANNELS(_users[fd].get_nickname(), *it));
+			continue;
+		}
+		if (_channels.find(*it) != _channels.end()) { // 존재하면
+		//Key check ERR_BADCHANNELKEY
+		//invite only check ERR_INVITEONLYCHAN
+
+			_users[fd].add_channel(_channels[*it]);
+			_channels[*it].add_user(_users[fd]);
+
+			//TODO - send_msg
+
+		} else { // 새로 생성
+
+		}
+	}
 }
 
 void Server::cmd_part(std::vector<std::string> &v, const int fd)
 {
-	if (v.size() <= 1) {
+	if (v.size() < 2 || v.size() > 3) {
 		_users[fd].send_msg(ERR_NEEDMOREPARAMS(_users[fd].get_nickname(), v[0]));
 		return ;
 	}
@@ -136,12 +157,13 @@ void Server::cmd_part(std::vector<std::string> &v, const int fd)
 	for (std::vector<std::string>::iterator it = chanList.begin(); it != chanList.end(); ++it) {
 		if (_channels.find(*it) != _channels.end()) {
 			if (_channels[*it].is_user(_users[fd])) {
-				_channels[*it].cmd_part(_users[fd]);
+				_channels[*it].del_user(_users[fd]);
 				std::string msg = ":" + _users[fd].get_nickname() + " PART " + *it;
 				if (reasonIndex < reasonList.size()) {
 					msg += " " + reasonList[reasonIndex++];
 				}
 				_channels[*it].send_msg(msg + "\n");
+				_users[fd].remove_channel(_channels[*it]);
 				if (_channels[*it].get_user_num() == 0) {
 					_channels.erase(*it);
 				}
@@ -153,6 +175,47 @@ void Server::cmd_part(std::vector<std::string> &v, const int fd)
 		}
 	}
 }
+
+//TODO - 	TOPIC
+
+
+
+
+//TODO - 	INVITE
+
+
+
+void Server::cmd_kick(std::vector<std::string> &v, const int fd)
+{
+	if (v.size() < 3 || v.size() > 4) {
+		_users[fd].send_msg(ERR_NEEDMOREPARAMS(_users[fd].get_nickname(), v[0]));
+		return;
+	}
+	if (_channels.find(v[1]) == _channels.end()) {
+		_users[fd].send_msg(ERR_NOSUCHCHANNEL(_users[fd].get_nickname(), v[1]));
+		return;
+	}
+	if (!_channels[v[1]].is_operator(_users[fd])) {
+		_users[fd].send_msg(ERR_CHANOPRIVSNEEDED(_users[fd].get_nickname(), v[1]));
+		return;
+	}
+	std::vector<std::string> userList = ft_split(v[2], ',');
+	for (std::vector<std::string>::iterator it = userList.begin(); it != userList.end(); ++it) {
+		if (!_channels[v[1]].is_user(_users[find_nickname(*it)->first])) {
+			_users[find_nickname(*it)->first].send_msg(ERR_NOTONCHANNEL(_users[find_nickname(*it)->first].get_nickname(), v[1]));
+			continue;
+		}
+		_channels[v[1]].del_user(_users[find_nickname(*it)->first]);
+		_users[find_nickname(*it)->first].remove_channel(_channels[v[1]]);
+		std::string str = ":ircserv " + v[0] + " " + v[1] + " " + *it;
+		if (v.size() == 4) {
+			str += ":" + v[3];
+		}
+		_channels[v[1]].send_msg(str + "\n");
+	}
+}
+
+
 
 void Server::cmd_mode(std::vector<std::string> &v, const int fd)
 {
@@ -250,6 +313,5 @@ void Server::cmd_kill(std::vector<std::string> &v, const int fd)
 {
 	
 }
-
 
 

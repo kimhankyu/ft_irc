@@ -1,5 +1,6 @@
 #include "User.hpp"
 #include <unistd.h>
+#include <algorithm>
 
 User::User() : _fd(0), _mode(0)
 {
@@ -8,7 +9,6 @@ User::User() : _fd(0), _mode(0)
 	_is_admin = false;
 	_nickname = "User" + std::to_string(_fd);
 }
-
 
 User::User(int fd) : _fd(fd), _mode(0)
 {
@@ -65,8 +65,12 @@ std::string User::get_mode() const {
 		}
 		i <<= 1;
 	}
-	return ret;
+	return "+" + ret;
 }
+
+std::vector<Channel> User::get_channels() const { return _channels; }
+int User::get_channels_num() const { return _channels.size(); }
+
 
 void User::set_nickname(std::string str) { _nickname = str; }
 void User::set_username(std::string str) { _username = str; }
@@ -90,10 +94,30 @@ void User::set_mode(int mode, int flag) {
 	}
 }
 
+bool User::is_channel_user(const Channel c)
+{
+	return std::find(_channels.begin(), _channels.end(), c) != _channels.end();
+}
+
+void User::add_channel(const Channel c)
+{
+	_channels.push_back(c);
+}
+
+void User::remove_channel(const Channel c)
+{
+	std::vector<Channel>::iterator it = std::find(_channels.begin(), _channels.end(), c);
+	_channels.erase(it);
+}
+
+
 void User::send_msg(const std::string msg)
 {
 	write(_fd, msg.c_str(), msg.size());
 }
+
+
+
 
 
 
