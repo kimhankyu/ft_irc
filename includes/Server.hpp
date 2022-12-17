@@ -48,7 +48,6 @@ private:
 	void cmd_ping(std::vector<std::string> &v, const int fd);
 	void cmd_oper(std::vector<std::string> &v, const int fd);
 
-// channel 객체 생성 전에 name validity 검증해야 함
 	/*
 	quit
 	*/
@@ -58,11 +57,8 @@ private:
 	void cmd_join(std::vector<std::string> &v, const int fd);
 	void cmd_part(std::vector<std::string> &v, const int fd);
 	void cmd_topic(std::vector<std::string> &v, const int fd);
-
-	// INVITE
-
+	void cmd_invite(std::vector<std::string> &v, const int fd);
 	void cmd_kick(std::vector<std::string> &v, const int fd);
-
 
 	void cmd_mode(std::vector<std::string> &v, const int fd);
 

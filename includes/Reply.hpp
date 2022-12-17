@@ -15,6 +15,7 @@
 #define ERR_NICKNAMEINUSE(currentNick, desiredNick)		":ircserv 433 " + currentNick + " " + desiredNick + " :Nickname is already in use\n"
 // #define ERR_NICKCOLLISION(nick)	":ircserv 436 " //우리는 다른 서버에서 중복인지 체크를 하지 않는다.
 #define ERR_NOTONCHANNEL(nick, channel)					":ircserv 442 " + nick + " " + channel + " :You're not on that channel\n"
+#define ERR_USERONCHANNEL(client, nick, channel)		":ircserv 443 " + client + " " + nick + " " + channel + " :is already on channel\n"
 
 #define ERR_NEEDMOREPARAMS(nick, command)				":ircserv 461 " + nick + " " + command + " :Not enough parameters\n"
 #define ERR_ALREADYREGISTRED(nick)						":ircserv 462 " + nick + " :You may not reregister\n"
@@ -25,6 +26,9 @@
 #define RPL_NICK(oldNick, newNick)						":" + oldNick + " NICK " + newNick + "\n"
 #define RPL_WELCOME(nick)								":ircserv 001 " + nick + " :Welcome to the Internet Relay Network " + nick + "\n"
 #define RPL_UMODEIS(nick, umode)						":ircserv 221 " + nick + " " + umode + "\n"
+#define RPL_NOTOPIC(nick, channel)						":ircserv 331 " + nick + " " + channel + " :No topic is set\n"
+#define RPL_TOPIC(nick, channel, topic)					":ircserv 332 " + nick + " " + channel + " :" + topic + "\n"
+#define RPL_INVITING(client, nick, channel)				":ircserv 341 " + client + " " + nick + " " + channel + "\n"
 #define RPL_YOUREOPER(nick)								":ircserv 381 " + nick + " :You are now an IRC operator\n"
 
 #endif

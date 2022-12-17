@@ -134,15 +134,24 @@ void Server::execute_command(std::string str, const int fd)
 		cmd_user(v, fd);
 	} else if (v[0] == "PING") {
 		cmd_ping(v, fd);
+	} else if (v[0] == "OPER") {
+		cmd_oper(v, fd);
+	} else if (v[0] == "JOIN") {
+		cmd_join(v, fd);
+	} else if (v[0] == "PART") {
+		cmd_part(v, fd);
+	} else if (v[0] == "TOPIC") {
+		cmd_topic(v, fd);
+	} else if (v[0] == "KICK") {
+		cmd_kick(v, fd);
+	} else if (v[0] == "MODE") {
+		cmd_mode(v, fd);
 	} else if (v[0] == "PRIVMSG") {
 		cmd_privmsg(v, fd);
 	} else if (v[0] == "NOTICE") {
 		cmd_notice(v, fd);
-	} else if (v[0] == "MODE") {
-		cmd_mode(v, fd);
-	} else if (v[0] == "OPER") {
-		cmd_oper(v, fd);
 	}
+	//cmd_kill
 
 
 

@@ -176,12 +176,78 @@ void Server::cmd_part(std::vector<std::string> &v, const int fd)
 	}
 }
 
-//TODO - 	TOPIC
+void Server::cmd_topic(std::vector<std::string> &v, const int fd)
+{
+	if (v.size() != 2 && v.size() != 3) {
+		_users[fd].send_msg(ERR_NEEDMOREPARAMS(_users[fd].get_nickname(), v[0]));
+		return;
+	}
+	if (_channels.find(v[0]) == _channels.end()) {
+		_users[fd].send_msg(ERR_NOSUCHCHANNEL(_users[fd].get_nickname(), v[1]));
+		return;
+	}
+	if (!_channels[v[1]].is_user(_users[fd])) {
+		_users[fd].send_msg(ERR_NOTONCHANNEL(_users[fd].get_nickname(), v[1]));
+		return;
+	}
+	if (v.size() == 2) {
+		std::string topic = _channels[v[1]].get_topic();
+		if (topic == "") {
+			_users[fd].send_msg(RPL_NOTOPIC(_users[fd].get_nickname(), v[1]));
+		} else {
+			_users[fd].send_msg(RPL_TOPIC(_users[fd].get_nickname(), v[1], topic));
+		}
+	} else {
+		// TODO - protected topic mode 확인
+		if (mode_check) {
+			if (!_channels[v[1]].is_operator(_users[fd])) {
+				_users[fd].send_msg(ERR_CHANOPRIVSNEEDED(_users[fd].get_nickname(), v[1]));
+				return;
+			}
+		}
+		std::string topic = v[2].substr(0);
+		_channels[v[1]].set_topic(topic);
+		_channels[v[1]].send_msg(":" + _users[fd].get_nickname() + " TOPIC " + v[1] + " " + v[2] + "\n");
+	}
+}
+
+void Server::cmd_invite(std::vector<std::string> &v, const int fd)
+{
+	if (v.size() != 3) {
+		_users[fd].send_msg(ERR_NEEDMOREPARAMS(_users[fd].get_nickname(), v[0]));
+		return;
+	}
+	if (_channels.find(v[0]) == _channels.end()) {
+		_users[fd].send_msg(ERR_NOSUCHCHANNEL(_users[fd].get_nickname(), v[1]));
+		return;
+	}
+	std::map<int, std::string>::iterator it = find_nickname(v[1]);
+	if (it == _nicknames.end()) {
+		_users[fd].send_msg(ERR_NOSUCHNICK(_users[fd].get_nickname(), v[1]));
+		return;
+	}
+	if (!_channels[v[2]].is_user(_users[fd])) {
+		_users[fd].send_msg(ERR_NOTONCHANNEL(_users[fd].get_nickname(), v[2]));
+		return;
+	}
+
+	// TODO 채널 초대전용 모드 check
+	if (mode_check) {
+		if (!_channels[v[2]].is_operator(_users[fd])) {
+			_users[fd].send_msg(ERR_CHANOPRIVSNEEDED(_users[fd].get_nickname(), v[2]));
+			return;
+		}
+	}
 
 
+	if (_channels[v[2]].is_user(_users[(*it).first])) {
+		_users[fd].send_msg(ERR_USERONCHANNEL(_users[fd].get_nickname(), v[1], v[2]));
+		return;
+	}
+	_users[fd].send_msg(RPL_INVITING(_users[fd].get_nickname(), v[1], v[2]));
+	_users[(*it).first].send_msg(":" + _users[fd].get_nickname() + " INVITE " + v[1] + " " + v[2] + "\n");
+}
 
-
-//TODO - 	INVITE
 
 
 

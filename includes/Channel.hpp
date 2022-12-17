@@ -14,8 +14,6 @@ private:
 	std::vector<User> _operators;
 	std::vector<User> _userlist;
 
-
-
 	Channel();
 
 public:
@@ -24,14 +22,16 @@ public:
 
 	int get_user_num();
 	std::string get_key() const;
+	std::string get_topic() const;
+	
+	void set_topic(const std::string str);
+
 	bool is_user(const User u);
 	bool is_operator(const User u);
 	void del_user(User u);
 	void add_user(const User u);
-	
+
 	void send_msg(const std::string str);
-
-
 };
 
 #endif

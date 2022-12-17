@@ -35,3 +35,63 @@
   <configuration>
   </configuration>
   <tdelta>0</tdelta>
+  <configuration>
+    <fileobject>
+      <filename>127.000.000.001.63240-127.000.000.001.06667</filename>
+      <filesize>130</filesize>
+      <tcpflow startime='2022-12-16T08:39:09.198987Z' endtime='2022-12-16T08:39:26.678577Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='63240' dstport='6667' packets='14' len='926' />
+    </fileobject>
+    <fileobject>
+      <filename>127.000.000.001.06667-127.000.000.001.59240</filename>
+      <filesize>157</filesize>
+      <tcpflow startime='2022-12-15T13:19:27.805264Z' endtime='2022-12-15T13:20:15.319407Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='6667' dstport='59240' packets='17' len='1121' />
+    </fileobject>
+    <fileobject>
+      <filename>127.000.000.001.59240-127.000.000.001.06667</filename>
+      <filesize>139</filesize>
+      <tcpflow startime='2022-12-15T13:19:27.805104Z' endtime='2022-12-15T13:20:15.319465Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='59240' dstport='6667' packets='17' len='1103' />
+    </fileobject>
+    <fileobject>
+      <filename>127.000.000.001.06667-127.000.000.001.50937</filename>
+      <filesize>127</filesize>
+      <tcpflow startime='2022-12-17T08:48:36.852132Z' endtime='2022-12-17T08:49:50.867478Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='6667' dstport='50937' packets='18' len='1147' />
+    </fileobject>
+    <fileobject>
+      <filename>127.000.000.001.06667-127.000.000.001.59198</filename>
+      <filesize>114</filesize>
+      <tcpflow startime='2022-12-15T13:13:19.370574Z' endtime='2022-12-15T13:13:42.337089Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='6667' dstport='59198' packets='15' len='966' />
+    </fileobject>
+    <fileobject>
+      <filename>127.000.000.001.50937-127.000.000.001.06667</filename>
+      <filesize>151</filesize>
+      <tcpflow startime='2022-12-17T08:48:36.852028Z' endtime='2022-12-17T08:49:50.867516Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='50937' dstport='6667' packets='18' len='1171' />
+    </fileobject>
+    <fileobject>
+      <filename>127.000.000.001.06667-127.000.000.001.63240</filename>
+      <filesize>114</filesize>
+      <tcpflow startime='2022-12-16T08:39:09.199093Z' endtime='2022-12-16T08:39:26.678599Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='6667' dstport='63240' packets='14' len='910' />
+    </fileobject>
+    <fileobject>
+      <filename>127.000.000.001.59198-127.000.000.001.06667</filename>
+      <filesize>143</filesize>
+      <tcpflow startime='2022-12-15T13:13:19.370369Z' endtime='2022-12-15T13:13:42.337134Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='59198' dstport='6667' packets='15' len='995' />
+    </fileobject>
+  </configuration>
+  <summary />
+  <open_fds_at_end>0</open_fds_at_end>
+  <max_open_flows>0</max_open_flows>
+  <total_flows>8</total_flows>
+  <flow_map_size>8</flow_map_size>
+  <total_packets>128</total_packets>
+  <rusage>
+    <utime>5.730151</utime>
+    <stime>42.782167</stime>
+    <maxrss>3342336</maxrss>
+    <minflt>598</minflt>
+    <majflt>134</majflt>
+    <nswap>0</nswap>
+    <inblock>0</inblock>
+    <oublock>0</oublock>
+    <clocktime>157347.265707</clocktime>
+  </rusage>
+</dfxml>
