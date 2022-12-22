@@ -1,9 +1,9 @@
 #ifndef USER_HPP
 #define USER_HPP
 
-#include "Channel.hpp"
 #include <string>
 #include <vector>
+#include <set>
 
 #define INVISIBLE_USER_MODE		1 //i
 #define OPER_USER_MODE			2 //o
@@ -24,7 +24,7 @@ private:
 	std::string	_hostname;
 	std::string	_servername;
 	std::string	_realname;
-	std::vector<Channel> _channels;
+	std::set<std::string> _channels;
 
 public:
 	User();
@@ -41,7 +41,7 @@ public:
 	bool get_registered() const;
 	bool get_admin() const;
 	std::string get_mode() const;
-	std::vector<Channel> get_channels() const;
+	
 	int get_channels_num() const;
 
 	void set_nickname(std::string str);
@@ -53,12 +53,14 @@ public:
 	void set_admin(bool b);
 	void set_mode(int mode, int flag);
 
-	bool is_channel_user(const Channel c);
-	void add_channel(const Channel c);
-	void remove_channel(const Channel c);
+	// bool is_channel_user(const Channel c);
+	void add_channel(const std::string c);
+	void remove_channel(const std::string c);
 
 	void send_msg(const std::string msg);
 
+
+	bool operator==(const User &u);
 };
 
 #endif

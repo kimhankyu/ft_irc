@@ -68,7 +68,6 @@ std::string User::get_mode() const {
 	return "+" + ret;
 }
 
-std::vector<Channel> User::get_channels() const { return _channels; }
 int User::get_channels_num() const { return _channels.size(); }
 
 
@@ -94,31 +93,33 @@ void User::set_mode(int mode, int flag) {
 	}
 }
 
-bool User::is_channel_user(const Channel c)
-{
-	return std::find(_channels.begin(), _channels.end(), c) != _channels.end();
-}
+// bool User::is_channel_user(const Channel c)
+// {
+// 	return std::find(_channels.begin(), _channels.end(), c) != _channels.end();
+// }
 
-void User::add_channel(const Channel c)
-{
-	_channels.push_back(c);
-}
+void User::add_channel(const std::string c) { _channels.insert(c); }
 
-void User::remove_channel(const Channel c)
-{
-	std::vector<Channel>::iterator it = std::find(_channels.begin(), _channels.end(), c);
-	_channels.erase(it);
-}
-
+void User::remove_channel(const std::string c) { _channels.erase(c); }
 
 void User::send_msg(const std::string msg)
 {
 	write(_fd, msg.c_str(), msg.size());
 }
 
-
-
-
-
+bool User::operator==(const User &u)
+{
+	if (_fd == u._fd &&
+		_mode == u._mode &&
+		_is_registered == u._is_registered &&
+		_is_authenticated == u._is_authenticated &&
+		_is_admin == u._is_admin &&
+		_nickname == u._nickname &&
+		_username == u._username &&
+		_hostname == u._hostname &&
+		_realname == u._realname)
+		return true;
+	return false;
+}
 
 User::~User() { }

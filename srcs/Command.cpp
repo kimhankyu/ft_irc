@@ -106,6 +106,12 @@ void Server::cmd_oper(std::vector<std::string> &v, const int fd)
 
 //TODO - QUIT
 
+/*
+채널이 없는 상태에서는 key setting 안됨
+비밀번호 세팅은 채널 생성 이후 mode +k 를 통해서
+*/
+
+// TODO - INVITE_ONLY mode 인 채널에는 join 불가
 
 void Server::cmd_join(std::vector<std::string> &v, const int fd)
 {
@@ -118,11 +124,11 @@ void Server::cmd_join(std::vector<std::string> &v, const int fd)
 	if (v.size() == 3) {
 		keyList = ft_split(v[2], ',');
 	}
-	int ketIndex = 0;
+	// size_t keyIndex = 0;
 	for (std::vector<std::string>::iterator it = chanList.begin(); it != chanList.end(); ++it) {
-		if (_users[fd].is_channel_user(_channels[*it])) {
-			continue;
-		}
+		// if (_users[fd].is_channel_user(_channels[*it])) {
+		// 	continue;
+		// }
 		if (_users[fd].get_channels_num() >= CHAN_USER_LIMIT) {
 			_users[fd].send_msg(ERR_TOOMANYCHANNELS(_users[fd].get_nickname(), *it));
 			continue;
@@ -131,12 +137,14 @@ void Server::cmd_join(std::vector<std::string> &v, const int fd)
 		//Key check ERR_BADCHANNELKEY
 		//invite only check ERR_INVITEONLYCHAN
 
-			_users[fd].add_channel(_channels[*it]);
+			_users[fd].add_channel(*it);
 			_channels[*it].add_user(_users[fd]);
 
 			//TODO - send_msg
 
 		} else { // 새로 생성
+		
+
 
 		}
 	}
@@ -150,7 +158,7 @@ void Server::cmd_part(std::vector<std::string> &v, const int fd)
 	}
 	std::vector<std::string> chanList = ft_split(v[1], ',');
 	std::vector<std::string> reasonList;
-	int reasonIndex = 0;
+	size_t reasonIndex = 0;
 	if (v.size() == 3) {
 		reasonList = ft_split(v[2], ',');
 	}
@@ -163,7 +171,7 @@ void Server::cmd_part(std::vector<std::string> &v, const int fd)
 					msg += " " + reasonList[reasonIndex++];
 				}
 				_channels[*it].send_msg(msg + "\n");
-				_users[fd].remove_channel(_channels[*it]);
+				_users[fd].remove_channel(*it);
 				if (_channels[*it].get_user_num() == 0) {
 					_channels.erase(*it);
 				}
@@ -198,8 +206,7 @@ void Server::cmd_topic(std::vector<std::string> &v, const int fd)
 			_users[fd].send_msg(RPL_TOPIC(_users[fd].get_nickname(), v[1], topic));
 		}
 	} else {
-		// TODO - protected topic mode 확인
-		if (mode_check) {
+		if (_channels[v[1]].is_mode(PROTECTED_TOPIC_MODE)) {
 			if (!_channels[v[1]].is_operator(_users[fd])) {
 				_users[fd].send_msg(ERR_CHANOPRIVSNEEDED(_users[fd].get_nickname(), v[1]));
 				return;
@@ -230,16 +237,12 @@ void Server::cmd_invite(std::vector<std::string> &v, const int fd)
 		_users[fd].send_msg(ERR_NOTONCHANNEL(_users[fd].get_nickname(), v[2]));
 		return;
 	}
-
-	// TODO 채널 초대전용 모드 check
-	if (mode_check) {
+	if (_channels[v[2]].is_mode(INVITE_ONLY_CHANNEL_MODE)) {
 		if (!_channels[v[2]].is_operator(_users[fd])) {
 			_users[fd].send_msg(ERR_CHANOPRIVSNEEDED(_users[fd].get_nickname(), v[2]));
 			return;
 		}
 	}
-
-
 	if (_channels[v[2]].is_user(_users[(*it).first])) {
 		_users[fd].send_msg(ERR_USERONCHANNEL(_users[fd].get_nickname(), v[1], v[2]));
 		return;
@@ -272,7 +275,7 @@ void Server::cmd_kick(std::vector<std::string> &v, const int fd)
 			continue;
 		}
 		_channels[v[1]].del_user(_users[find_nickname(*it)->first]);
-		_users[find_nickname(*it)->first].remove_channel(_channels[v[1]]);
+		_users[find_nickname(*it)->first].remove_channel(v[1]);
 		std::string str = ":ircserv " + v[0] + " " + v[1] + " " + *it;
 		if (v.size() == 4) {
 			str += ":" + v[3];
@@ -281,8 +284,6 @@ void Server::cmd_kick(std::vector<std::string> &v, const int fd)
 	}
 }
 
-
-
 void Server::cmd_mode(std::vector<std::string> &v, const int fd)
 {
 	if (v.size() < 2) {
@@ -290,25 +291,50 @@ void Server::cmd_mode(std::vector<std::string> &v, const int fd)
 		return;
 	}
 	if (v[1][0] == '#') {
-		// TODO channel mode
 		if (_channels.find(v[1]) == _channels.end()) {
 			_users[fd].send_msg(ERR_NOSUCHCHANNEL(_users[fd].get_nickname(), v[1]));
 			return ;
 		}
-		if (v.size() == 2) { // <modestring> 없는 경우
-// RPL_CHANNELMODEIS
+		if (v.size() == 2) {
+			std::string str = RPL_CHANNELMODEIS(_users[fd].get_nickname(), v[1],
+				_channels[v[1]].get_mode());
+			if (_channels[v[1]].is_mode(KEY_CHANNEL_MODE)) {
+				str += " " + _channels[v[1]].get_key() + "\n";
+			} else {
+				str += "\n";
+			}
+			_users[fd].send_msg(str);
 			return;
 		}
 		if (!_channels[v[1]].is_operator(_users[fd])) {
 			_users[fd].send_msg(ERR_CHANOPRIVSNEEDED(_users[fd].get_nickname(), v[1]));
-			return ;
+			return;
 		}
-
-
-
-
-
-
+		int flag = 0;
+		for (size_t i = 0; i < v[2].size(); ++i) {
+			if (v[2][i] == '+') { flag = 0; continue; }
+			else if (v[2][i] == '-') { flag = 1; continue; }
+			if (v[2][i] == 'i') {
+				_channels[v[1]].set_mode(INVITE_ONLY_CHANNEL_MODE, flag);
+			} else if (v[2][i] == 't') {
+				_channels[v[1]].set_mode(PROTECTED_TOPIC_MODE, flag);
+			} else if (v[2][i] == 'k') {
+				if (v.size() < 4) {
+					_users[fd].send_msg(ERR_NEEDMOREPARAMS(_users[fd].get_nickname(), v[0]));
+					return;
+				}
+				_channels[v[1]].set_mode(KEY_CHANNEL_MODE, flag, v[3]);
+			} else {
+				_users[fd].send_msg(ERR_UMODEUNKNOWNFLAG(_users[fd].get_nickname()));
+			}
+		}
+		std::string str = ":ircserv MODE " + v[1] + " " + v[2];
+		if (v.size() >= 4) {
+			for (size_t i = 3; i < v.size(); ++i)
+				str += " " + v[i];
+		}
+		str += "\n";
+		_channels[v[1]].send_msg(str);
 	} else {
 		std::map<int, std::string>::iterator it = find_nickname(v[1]);
 		if (it == _nicknames.end()) {
@@ -375,9 +401,9 @@ void Server::cmd_notice(std::vector<std::string> &v, const int fd)
 	 + " NOTICE " + itm->second + " :" + v[2] + "\n");
 }
 
-void Server::cmd_kill(std::vector<std::string> &v, const int fd)
-{
+// void Server::cmd_kill(std::vector<std::string> &v, const int fd)
+// {
 	
-}
+// }
 
 

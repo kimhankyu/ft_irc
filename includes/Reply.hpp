@@ -2,8 +2,6 @@
 #define REPLY_HPP
 
 /* ERR_REPLY */
-#define ERR_UMODEUNKNOWNFLAG(nick)						":ircserv 501 " + nick + " :Unknown MODE flag\n"
-#define ERR_USERSDONTMATCH(nick)						":ircserv 502 " + nick + " :Cannot change mode for other users\n"
 
 #define ERR_NOSUCHNICK(nick, nonExistant)				":ircserv 401 " + nick + " " + nonExistant + " :No such nick/channel\n"
 #define ERR_NOSUCHSERVER(nick, severName)				":ircserv 402 " + nick + " " + serverName + " :No such server\n"
@@ -22,10 +20,13 @@
 #define ERR_PASSWDMISMATCH(nick)						":ircserv 464 " + nick + " :Password incorrect\n"
 #define ERR_CHANOPRIVSNEEDED(nick, channel)				":ircserv 482 " + nick + " " + channel + " :You're not channel operator\n"
 
+#define ERR_UMODEUNKNOWNFLAG(nick)						":ircserv 501 " + nick + " :Unknown MODE flag\n"
+#define ERR_USERSDONTMATCH(nick)						":ircserv 502 " + nick + " :Cannot change mode for other users\n"
 /* command REPLY */
 #define RPL_NICK(oldNick, newNick)						":" + oldNick + " NICK " + newNick + "\n"
 #define RPL_WELCOME(nick)								":ircserv 001 " + nick + " :Welcome to the Internet Relay Network " + nick + "\n"
 #define RPL_UMODEIS(nick, umode)						":ircserv 221 " + nick + " " + umode + "\n"
+#define RPL_CHANNELMODEIS(nick, channel, mode)			":ircserv 324 " + nick + " " + channel + " " + mode
 #define RPL_NOTOPIC(nick, channel)						":ircserv 331 " + nick + " " + channel + " :No topic is set\n"
 #define RPL_TOPIC(nick, channel, topic)					":ircserv 332 " + nick + " " + channel + " :" + topic + "\n"
 #define RPL_INVITING(client, nick, channel)				":ircserv 341 " + client + " " + nick + " " + channel + "\n"
