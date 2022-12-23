@@ -83,9 +83,7 @@ void Server::echo_message()
 					perror("read fail");
 					exit(EXIT_FAILURE);
 				} else if (n == 0) {
-					//quit
-					std::cout << "n == 0\n";
-
+					//command quit
 				}
 			} else {
 				buff[n] = '\0';

@@ -106,12 +106,6 @@ void Server::cmd_oper(std::vector<std::string> &v, const int fd)
 
 //TODO - QUIT
 
-/*
-채널이 없는 상태에서는 key setting 안됨
-비밀번호 세팅은 채널 생성 이후 mode +k 를 통해서
-*/
-
-// TODO - INVITE_ONLY mode 인 채널에는 join 불가
 
 void Server::cmd_join(std::vector<std::string> &v, const int fd)
 {
@@ -124,29 +118,43 @@ void Server::cmd_join(std::vector<std::string> &v, const int fd)
 	if (v.size() == 3) {
 		keyList = ft_split(v[2], ',');
 	}
-	// size_t keyIndex = 0;
+	size_t keyIndex = 0;
 	for (std::vector<std::string>::iterator it = chanList.begin(); it != chanList.end(); ++it) {
-		// if (_users[fd].is_channel_user(_channels[*it])) {
-		// 	continue;
-		// }
+		if (_users[fd].is_channel_user(*it)) {
+			if (v.size() == 3 && keyIndex < keyList.size()) ++keyIndex;
+			continue;
+		}
 		if (_users[fd].get_channels_num() >= CHAN_USER_LIMIT) {
 			_users[fd].send_msg(ERR_TOOMANYCHANNELS(_users[fd].get_nickname(), *it));
+			if (v.size() == 3 && keyIndex < keyList.size()) ++keyIndex;
 			continue;
 		}
 		if (_channels.find(*it) != _channels.end()) { // 존재하면
-		//Key check ERR_BADCHANNELKEY
-		//invite only check ERR_INVITEONLYCHAN
-
-			_users[fd].add_channel(*it);
+			if (_channels[*it].is_mode(INVITE_ONLY_CHANNEL_MODE)) {
+				_users[fd].send_msg(ERR_INVITEONLYCHAN(_users[fd].get_nickname(), *it));
+				if (v.size() == 3 && keyIndex < keyList.size()) ++keyIndex;
+				continue;
+			}
+			if (_channels[*it].is_mode(KEY_CHANNEL_MODE)) {
+				if (v.size() != 3 || !_channels[*it].is_key_same(keyList[keyIndex])) {
+					_users[fd].send_msg(ERR_BADCHANNELKEY(_users[fd].get_nickname(), *it));
+					if (v.size() == 3 && keyIndex < keyList.size()) ++keyIndex;
+					continue;
+				}
+			}
 			_channels[*it].add_user(_users[fd]);
-
-			//TODO - send_msg
-
 		} else { // 새로 생성
-		
-
-
+			// TODO - channel name check
+			_channels[*it] = Channel(*it, _users[fd]);
+			if (v.size() == 3 && keyIndex < keyList.size()) ++keyIndex;
 		}
+		_users[fd].add_channel(*it);
+		_users[fd].send_msg(":" + _users[fd].get_nickname() + " JOIN " + *it + "\n");
+		if (_channels[*it].get_topic() != "") {
+			_users[fd].send_msg(RPL_TOPIC(_users[fd].get_nickname(), *it, _channels[*it].get_topic()));
+		}
+		// RPL_NAMREPLY
+		// RPL_ENDOFNAMES
 	}
 }
 
@@ -165,12 +173,12 @@ void Server::cmd_part(std::vector<std::string> &v, const int fd)
 	for (std::vector<std::string>::iterator it = chanList.begin(); it != chanList.end(); ++it) {
 		if (_channels.find(*it) != _channels.end()) {
 			if (_channels[*it].is_user(_users[fd])) {
-				_channels[*it].del_user(_users[fd]);
-				std::string msg = ":" + _users[fd].get_nickname() + " PART " + *it;
-				if (reasonIndex < reasonList.size()) {
+				std::string msg = ":" + _users[fd].get_fullname() + " PART " + *it;
+				if (v.size() == 3 && reasonIndex < reasonList.size()) {
 					msg += " " + reasonList[reasonIndex++];
 				}
 				_channels[*it].send_msg(msg + "\n");
+				_channels[*it].del_user(_users[fd]);
 				_users[fd].remove_channel(*it);
 				if (_channels[*it].get_user_num() == 0) {
 					_channels.erase(*it);
@@ -250,9 +258,6 @@ void Server::cmd_invite(std::vector<std::string> &v, const int fd)
 	_users[fd].send_msg(RPL_INVITING(_users[fd].get_nickname(), v[1], v[2]));
 	_users[(*it).first].send_msg(":" + _users[fd].get_nickname() + " INVITE " + v[1] + " " + v[2] + "\n");
 }
-
-
-
 
 void Server::cmd_kick(std::vector<std::string> &v, const int fd)
 {
@@ -372,35 +377,39 @@ void Server::cmd_mode(std::vector<std::string> &v, const int fd)
 	}
 }
 
-
+// TODO - CHANNAL로 보낼 때 중복으로 보내짐
 void Server::cmd_privmsg(std::vector<std::string> &v, const int fd)
 {
-	//TODO - ERR 처리
-	//TODO - 타겟이 channel일 때
-	std::vector<std::string>::iterator it = v.begin();
-	for (; it != v.end(); ++it) {
-		std::cout << *it << '\n';
+	if (v[1][0] == '#') {
+		_channels[v[1]].send_msg(":" + _users[fd].get_nickname()
+	 + " PRIVMSG " + v[1] + " :" + v[2] + "\n");
+	} else {
+		std::map<int, std::string>::iterator itm = find_nickname(v[1]);
+		if (itm == _nicknames.end()) {
+			_users[fd].send_msg(ERR_NOSUCHNICK(_users[fd].get_nickname(), v[1]));
+			return;
+		}
+		_users[itm->first].send_msg(":" + _users[fd].get_nickname()
+		+ " PRIVMSG " + itm->second + " :" + v[2] + "\n");
 	}
-	/**
-	 * ERR_NOSUCHNICK (no such nick/channel)
-	 * 
-	*/
-	std::map<int, std::string>::iterator itm = find_nickname(v[1]);
-	_users[itm->first].send_msg(":" + _users[fd].get_nickname()
-	 + " PRIVMSG " + itm->second + " :" + v[2] + "\n");
-
-
 }
 
 void Server::cmd_notice(std::vector<std::string> &v, const int fd)
 {
-	//TODO - ERR 처리 (ERR 문구 send하면 안됨)
-
-	std::map<int, std::string>::iterator itm = find_nickname(v[1]);
-	_users[itm->first].send_msg(":" + _users[fd].get_nickname()
-	 + " NOTICE " + itm->second + " :" + v[2] + "\n");
+	if (v[1][0] == '#') {
+		_channels[v[1]].send_msg(":" + _users[fd].get_nickname()
+	 + " NOTICE " + v[1] + " :" + v[2] + "\n");
+	} else {
+		std::map<int, std::string>::iterator itm = find_nickname(v[1]);
+		if (itm == _nicknames.end()) {
+			return;
+		}
+		_users[itm->first].send_msg(":" + _users[fd].get_nickname()
+		+ " NOTICE " + itm->second + " :" + v[2] + "\n");
+	}
 }
 
+//TODO - cmd_kill
 // void Server::cmd_kill(std::vector<std::string> &v, const int fd)
 // {
 	

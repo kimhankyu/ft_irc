@@ -49,6 +49,11 @@ std::string User::get_username() const { return _username; }
 std::string User::get_hostname() const { return _hostname; }
 std::string User::get_servername() const { return _servername; }
 std::string User::get_realname() const { return _realname; }
+std::string User::get_fullname() const
+{
+	return _nickname + "!" + _username + "@" + _realname;
+}
+
 bool User::get_registered() const { return _is_registered; }
 bool User::get_admin() const { return _is_admin; }
 
@@ -93,10 +98,10 @@ void User::set_mode(int mode, int flag) {
 	}
 }
 
-// bool User::is_channel_user(const Channel c)
-// {
-// 	return std::find(_channels.begin(), _channels.end(), c) != _channels.end();
-// }
+bool User::is_channel_user(const std::string c)
+{
+	return _channels.find(c) != _channels.end();
+}
 
 void User::add_channel(const std::string c) { _channels.insert(c); }
 

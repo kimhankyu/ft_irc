@@ -38,6 +38,7 @@ public:
 	std::string get_hostname() const;
 	std::string get_servername() const;
 	std::string get_realname() const;
+	std::string get_fullname() const;
 	bool get_registered() const;
 	bool get_admin() const;
 	std::string get_mode() const;
@@ -53,7 +54,7 @@ public:
 	void set_admin(bool b);
 	void set_mode(int mode, int flag);
 
-	// bool is_channel_user(const Channel c);
+	bool is_channel_user(const std::string c);
 	void add_channel(const std::string c);
 	void remove_channel(const std::string c);
 

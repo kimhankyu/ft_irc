@@ -2,11 +2,18 @@
 #include <iostream>
 #include <algorithm>
 
-Channel::Channel() : _mode(0) { }
-
-Channel::Channel(std::string name, std::string key, User oper)
-: _name(name), _key(key)
+Channel::Channel() : _mode(0)
 {
+	_name = "";
+	_key = "";
+	_topic = "";
+}
+
+Channel::Channel(std::string name, User oper)
+: _mode(0), _name(name)
+{
+	_key = "";
+	_topic = "";
 	_operators.push_back(oper);
 	_userlist.push_back(oper);
 }
@@ -59,6 +66,12 @@ bool Channel::is_mode(int mode)
 	return _mode & mode;
 }
 
+bool Channel::is_key_same(const std::string str)
+{
+	return str == _key;
+}
+
+
 void Channel::del_user(User u)
 {
 	std::vector<User>::iterator it = std::find(_userlist.begin(), _userlist.end(), u);
@@ -74,19 +87,15 @@ void Channel::del_user(User u)
 
 void Channel::add_user(const User u)
 {
-	if (_operators.size() == 0) {
-		_operators.push_back(u);
-	}
 	_userlist.push_back(u);
 }
 
-
-
-
-
-
 void Channel::send_msg(const std::string str)
 {
+	std::cout << _name << " : " << get_user_num() << '\n';
+	for (std::vector<User>::iterator i = _userlist.begin(); i != _userlist.end(); ++i) {
+		std::cout << (*i).get_nickname() << '\n';
+	}
 	std::vector<User>::iterator it = _userlist.begin();
 
 	for (; it != _userlist.end(); ++it) {

@@ -19,10 +19,10 @@ private:
 	std::vector<User> _operators;
 	std::vector<User> _userlist;
 
-
+//TODO - operator=
 public:
 	Channel();
-	Channel(std::string name, std::string key, User oper);
+	Channel(std::string name, User oper);
 	~Channel();
 
 	int get_user_num();
@@ -37,6 +37,7 @@ public:
 	bool is_user(User u);
 	bool is_operator(User u);
 	bool is_mode(int mode);
+	bool is_key_same(const std::string str);
 	void del_user(User u);
 	void add_user(const User u);
 
