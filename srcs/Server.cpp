@@ -134,12 +134,15 @@ void Server::execute_command(std::string str, const int fd)
 		cmd_ping(v, fd);
 	} else if (v[0] == "OPER") {
 		cmd_oper(v, fd);
+		//TODO - QUIT 추가 예정
 	} else if (v[0] == "JOIN") {
 		cmd_join(v, fd);
 	} else if (v[0] == "PART") {
 		cmd_part(v, fd);
 	} else if (v[0] == "TOPIC") {
 		cmd_topic(v, fd);
+	} else if (v[0] == "INVITE") {
+		cmd_invite(v, fd);
 	} else if (v[0] == "KICK") {
 		cmd_kick(v, fd);
 	} else if (v[0] == "MODE") {
@@ -149,7 +152,7 @@ void Server::execute_command(std::string str, const int fd)
 	} else if (v[0] == "NOTICE") {
 		cmd_notice(v, fd);
 	}
-	//cmd_kill
+	//TODO - cmd_kill
 
 
 

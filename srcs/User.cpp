@@ -49,10 +49,7 @@ std::string User::get_username() const { return _username; }
 std::string User::get_hostname() const { return _hostname; }
 std::string User::get_servername() const { return _servername; }
 std::string User::get_realname() const { return _realname; }
-std::string User::get_fullname() const
-{
-	return _nickname + "!" + _username + "@" + _realname;
-}
+std::string User::get_fullname() const { return _nickname + "!" + _username + "@" + _realname; }
 
 bool User::get_registered() const { return _is_registered; }
 bool User::get_admin() const { return _is_admin; }

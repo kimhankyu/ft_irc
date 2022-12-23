@@ -21,9 +21,8 @@ int main(int argc, char *argv[]) {
 	}
 	std::cout << "port : " << argv[1] << "  password : " <<  argv[2] << '\n';
 
-/*
-	argv[1] 검사
-*/
+
+// TODO - argv[1] 검사
 
 	Server server(6667, std::string(argv[2]));
 	server.execute();

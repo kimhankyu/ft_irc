@@ -29,7 +29,7 @@
       <command_line>command line to be provided</command_line>
       <uid>0</uid>
       <username>root</username>
-      <start_time>2022-12-23T06:15:01Z</start_time>
+      <start_time>2022-12-23T16:31:16Z</start_time>
     </execution_environment>
   </creator>
   <configuration>
@@ -37,21 +37,6 @@
   <tdelta>0</tdelta>
   <configuration>
     <fileobject>
-      <filename>127.000.000.001.49294-127.000.000.001.06667</filename>
-      <filesize>71</filesize>
-      <tcpflow startime='2022-12-23T12:02:18.012709Z' endtime='2022-12-23T12:02:18.013359Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='49294' dstport='6667' packets='9' len='575' />
-    </fileobject>
-    <fileobject>
-      <filename>127.000.000.001.49296-127.000.000.001.06667</filename>
-      <filesize>71</filesize>
-      <tcpflow startime='2022-12-23T12:02:32.474017Z' endtime='2022-12-23T12:02:32.474715Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='49296' dstport='6667' packets='10' len='631' />
-    </fileobject>
-    <fileobject>
-      <filename>127.000.000.001.49293-127.000.000.001.06667</filename>
-      <filesize>159</filesize>
-      <tcpflow startime='2022-12-23T12:02:14.773674Z' endtime='2022-12-23T12:09:49.510101Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='49293' dstport='6667' packets='25' len='1559' />
-    </fileobject>
-    <fileobject>
       <filesize>0</filesize>
-      <tcpflow startime='2022-12-23T12:34:34.353125Z' endtime='2022-12-23T12:34:34.353450Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='6667' dstport='49462' packets='5' len='280' />
+      <tcpflow startime='2022-12-23T17:18:21.460684Z' endtime='2022-12-23T17:18:21.461026Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='6667' dstport='50591' packets='5' len='280' />
     </fileobject>

@@ -85,7 +85,7 @@ void Server::cmd_ping(std::vector<std::string> &v, const int fd)
 		_users[fd].send_msg(ERR_NOORIGIN);
 	} else {
 		//TODO - 시간 측정해서 시간 초과하면 quit 호출
-		_users[fd].send_msg("PONG " + v[1] + "\n");
+		_users[fd].send_msg("PONG " + v[1] + "\r\n");
 	}
 }
 
@@ -99,7 +99,7 @@ void Server::cmd_oper(std::vector<std::string> &v, const int fd)
 		} else if (v[1] == OPER_NICK && v[2] == OPER_PASS) {
 			_users[fd].send_msg(RPL_YOUREOPER(v[1]));
 			_users[fd].set_mode(OPER_USER_MODE, 0);
-			_users[fd].send_msg(":ircserv MODE " + v[1] + " " + "+o" + "\n");
+			_users[fd].send_msg(":ircserv MODE " + v[1] + " " + "+o" + "\r\n");
 		}
 	}
 }
@@ -129,8 +129,8 @@ void Server::cmd_join(std::vector<std::string> &v, const int fd)
 			if (v.size() == 3 && keyIndex < keyList.size()) ++keyIndex;
 			continue;
 		}
-		if (_channels.find(*it) != _channels.end()) { // 존재하면
-			if (_channels[*it].is_mode(INVITE_ONLY_CHANNEL_MODE)) {
+		if (_channels.find(*it) != _channels.end()) {
+			if (_channels[*it].is_mode(INVITE_ONLY_CHANNEL_MODE) && !_channels[*it].is_invite(_users[fd])) {
 				_users[fd].send_msg(ERR_INVITEONLYCHAN(_users[fd].get_nickname(), *it));
 				if (v.size() == 3 && keyIndex < keyList.size()) ++keyIndex;
 				continue;
@@ -142,19 +142,22 @@ void Server::cmd_join(std::vector<std::string> &v, const int fd)
 					continue;
 				}
 			}
+			if (_channels[*it].is_mode(INVITE_ONLY_CHANNEL_MODE)) {
+				_channels[*it].del_invite(_users[fd]);
+			}
 			_channels[*it].add_user(_users[fd]);
-		} else { // 새로 생성
+		} else {
 			// TODO - channel name check
 			_channels[*it] = Channel(*it, _users[fd]);
 			if (v.size() == 3 && keyIndex < keyList.size()) ++keyIndex;
 		}
 		_users[fd].add_channel(*it);
-		_users[fd].send_msg(":" + _users[fd].get_nickname() + " JOIN " + *it + "\n");
+		_users[fd].send_msg(":" + _users[fd].get_nickname() + " JOIN " + *it + "\r\n");
 		if (_channels[*it].get_topic() != "") {
 			_users[fd].send_msg(RPL_TOPIC(_users[fd].get_nickname(), *it, _channels[*it].get_topic()));
 		}
-		// RPL_NAMREPLY
-		// RPL_ENDOFNAMES
+		_users[fd].send_msg(RPL_NAMREPLY(_users[fd].get_nickname(), *it, _channels[*it].get_users()));
+		_users[fd].send_msg(RPL_ENDOFNAMES(_users[fd].get_nickname(), *it));
 	}
 }
 
@@ -177,7 +180,7 @@ void Server::cmd_part(std::vector<std::string> &v, const int fd)
 				if (v.size() == 3 && reasonIndex < reasonList.size()) {
 					msg += " " + reasonList[reasonIndex++];
 				}
-				_channels[*it].send_msg(msg + "\n");
+				_channels[*it].send_msg(msg + "\r\n");
 				_channels[*it].del_user(_users[fd]);
 				_users[fd].remove_channel(*it);
 				if (_channels[*it].get_user_num() == 0) {
@@ -222,9 +225,10 @@ void Server::cmd_topic(std::vector<std::string> &v, const int fd)
 		}
 		std::string topic = v[2].substr(0);
 		_channels[v[1]].set_topic(topic);
-		_channels[v[1]].send_msg(":" + _users[fd].get_nickname() + " TOPIC " + v[1] + " " + v[2] + "\n");
+		_channels[v[1]].send_msg(":" + _users[fd].get_nickname() + " TOPIC " + v[1] + " " + v[2] + "\r\n");
 	}
 }
+
 
 void Server::cmd_invite(std::vector<std::string> &v, const int fd)
 {
@@ -232,7 +236,7 @@ void Server::cmd_invite(std::vector<std::string> &v, const int fd)
 		_users[fd].send_msg(ERR_NEEDMOREPARAMS(_users[fd].get_nickname(), v[0]));
 		return;
 	}
-	if (_channels.find(v[0]) == _channels.end()) {
+	if (_channels.find(v[2]) == _channels.end()) {
 		_users[fd].send_msg(ERR_NOSUCHCHANNEL(_users[fd].get_nickname(), v[1]));
 		return;
 	}
@@ -255,8 +259,9 @@ void Server::cmd_invite(std::vector<std::string> &v, const int fd)
 		_users[fd].send_msg(ERR_USERONCHANNEL(_users[fd].get_nickname(), v[1], v[2]));
 		return;
 	}
+	_channels[v[2]].add_invite(_users[(*it).first]);
 	_users[fd].send_msg(RPL_INVITING(_users[fd].get_nickname(), v[1], v[2]));
-	_users[(*it).first].send_msg(":" + _users[fd].get_nickname() + " INVITE " + v[1] + " " + v[2] + "\n");
+	_users[(*it).first].send_msg(":" + _users[fd].get_fullname() + " INVITE " + v[1] + " " + v[2] + "\r\n");
 }
 
 void Server::cmd_kick(std::vector<std::string> &v, const int fd)
@@ -285,7 +290,7 @@ void Server::cmd_kick(std::vector<std::string> &v, const int fd)
 		if (v.size() == 4) {
 			str += ":" + v[3];
 		}
-		_channels[v[1]].send_msg(str + "\n");
+		_channels[v[1]].send_msg(str + "\r\n");
 	}
 }
 
@@ -304,9 +309,9 @@ void Server::cmd_mode(std::vector<std::string> &v, const int fd)
 			std::string str = RPL_CHANNELMODEIS(_users[fd].get_nickname(), v[1],
 				_channels[v[1]].get_mode());
 			if (_channels[v[1]].is_mode(KEY_CHANNEL_MODE)) {
-				str += " " + _channels[v[1]].get_key() + "\n";
+				str += " " + _channels[v[1]].get_key() + "\r\n";
 			} else {
-				str += "\n";
+				str += "\r\n";
 			}
 			_users[fd].send_msg(str);
 			return;
@@ -338,7 +343,7 @@ void Server::cmd_mode(std::vector<std::string> &v, const int fd)
 			for (size_t i = 3; i < v.size(); ++i)
 				str += " " + v[i];
 		}
-		str += "\n";
+		str += "\r\n";
 		_channels[v[1]].send_msg(str);
 	} else {
 		std::map<int, std::string>::iterator it = find_nickname(v[1]);
@@ -372,17 +377,16 @@ void Server::cmd_mode(std::vector<std::string> &v, const int fd)
 					return ;
 				}
 			}
-			_users[fd].send_msg(":ircserv MODE " + v[1] + " " + v[2] + "\n");
+			_users[fd].send_msg(":ircserv MODE " + v[1] + " " + v[2] + "\r\n");
 		}
 	}
 }
 
-// TODO - CHANNAL로 보낼 때 중복으로 보내짐
 void Server::cmd_privmsg(std::vector<std::string> &v, const int fd)
 {
 	if (v[1][0] == '#') {
 		_channels[v[1]].send_msg(":" + _users[fd].get_nickname()
-	 + " PRIVMSG " + v[1] + " :" + v[2] + "\n");
+	 + " PRIVMSG " + v[1] + " :" + v[2] + "\r\n", _users[fd]);
 	} else {
 		std::map<int, std::string>::iterator itm = find_nickname(v[1]);
 		if (itm == _nicknames.end()) {
@@ -390,7 +394,7 @@ void Server::cmd_privmsg(std::vector<std::string> &v, const int fd)
 			return;
 		}
 		_users[itm->first].send_msg(":" + _users[fd].get_nickname()
-		+ " PRIVMSG " + itm->second + " :" + v[2] + "\n");
+		+ " PRIVMSG " + itm->second + " :" + v[2] + "\r\n");
 	}
 }
 
@@ -398,14 +402,14 @@ void Server::cmd_notice(std::vector<std::string> &v, const int fd)
 {
 	if (v[1][0] == '#') {
 		_channels[v[1]].send_msg(":" + _users[fd].get_nickname()
-	 + " NOTICE " + v[1] + " :" + v[2] + "\n");
+	 + " NOTICE " + v[1] + " :" + v[2] + "\r\n", _users[fd]);
 	} else {
 		std::map<int, std::string>::iterator itm = find_nickname(v[1]);
 		if (itm == _nicknames.end()) {
 			return;
 		}
 		_users[itm->first].send_msg(":" + _users[fd].get_nickname()
-		+ " NOTICE " + itm->second + " :" + v[2] + "\n");
+		+ " NOTICE " + itm->second + " :" + v[2] + "\r\n");
 	}
 }
 

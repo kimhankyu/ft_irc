@@ -36,7 +36,17 @@ std::string Channel::get_mode() const
 	return "+" + ret;
 }
 
-
+std::string Channel::get_users()
+{
+	std::string ret = "";
+	std::vector<User>::iterator it = _userlist.begin();
+	for (; it != _userlist.end(); ++it) {
+		if (is_operator(*it))
+			ret += "@";
+		ret += (*it).get_nickname() + " ";
+	}
+	return ret;
+}
 
 void Channel::set_topic(const std::string str) { _topic = str; }
 void Channel::set_mode(int mode, int flag, std::string arg)
@@ -59,6 +69,11 @@ bool Channel::is_user(User u)
 bool Channel::is_operator(User u)
 {
 	return std::find(_operators.begin(), _operators.end(), u) != _operators.end();
+}
+
+bool Channel::is_invite(User u)
+{
+	return std::find(_inviteUsers.begin(), _inviteUsers.end(), u) != _inviteUsers.end();
 }
 
 bool Channel::is_mode(int mode)
@@ -85,20 +100,38 @@ void Channel::del_user(User u)
 	}
 }
 
+void Channel::del_invite(User u)
+{
+	std::vector<User>::iterator it = std::find(_inviteUsers.begin(), _inviteUsers.end(), u);
+	_inviteUsers.erase(it);
+}
+
 void Channel::add_user(const User u)
 {
 	_userlist.push_back(u);
 }
 
+void Channel::add_invite(const User u)
+{
+	_inviteUsers.push_back(u);
+}
+
 void Channel::send_msg(const std::string str)
 {
-	std::cout << _name << " : " << get_user_num() << '\n';
-	for (std::vector<User>::iterator i = _userlist.begin(); i != _userlist.end(); ++i) {
-		std::cout << (*i).get_nickname() << '\n';
-	}
 	std::vector<User>::iterator it = _userlist.begin();
 
 	for (; it != _userlist.end(); ++it) {
+		(*it).send_msg(str);
+	}
+}
+
+void Channel::send_msg(const std::string str, User u)
+{
+	std::vector<User>::iterator it = _userlist.begin();
+
+	for (; it != _userlist.end(); ++it) {
+		if (*it == u)
+			continue;
 		(*it).send_msg(str);
 	}
 }
