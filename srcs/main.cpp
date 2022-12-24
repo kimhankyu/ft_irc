@@ -7,28 +7,21 @@
 #include "Server.hpp"
 #include "Util.hpp"
 
-/*
-./ircserv <port> <password>
-*/
-
-#define PORT 6667
-
+/* ./ircserv <port> <password> */
 
 int main(int argc, char *argv[]) {
 	if (argc != 3) {
 		std::cerr << "Usage : ./ircserv <port> <password>\n";
-		exit(1);
+		return 1;
 	}
-	std::cout << "port : " << argv[1] << "  password : " <<  argv[2] << '\n';
+	int port = convertPort(std::string(argv[1]));
+	if (port == -1) {
+		std::cerr << "port is not available\n";
+		return 1;
+	}
 
-
-// TODO - argv[1] 검사
-
-	Server server(6667, std::string(argv[2]));
+	Server server(port, std::string(argv[2]));
 	server.execute();
-
-
-
 
 	return 0;
 }

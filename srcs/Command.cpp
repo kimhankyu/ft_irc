@@ -176,7 +176,10 @@ void Server::cmd_join(std::vector<std::string> &v, const int fd)
 			}
 			_channels[*it].add_user(_users[fd]);
 		} else {
-			// TODO - channel name check
+			if (!channelCheck(*it)) {
+				// bad channel에 대한 replay는 없다.
+				return;
+			}
 			_channels[*it] = Channel(*it, _users[fd]);
 			if (v.size() == 3 && keyIndex < keyList.size()) ++keyIndex;
 		}
@@ -394,8 +397,12 @@ void Server::cmd_mode(std::vector<std::string> &v, const int fd)
 				if (v[2][i] == 'i') {
 					_users[fd].set_mode(INVISIBLE_USER_MODE, flag);
 				} else if (v[2][i] == 'o') {
+					if (flag != 1)
+						return;
 					_users[fd].set_mode(OPER_USER_MODE, flag);
 				} else if (v[2][i] == 'O') {
+					if (flag != 1)
+						return;
 					_users[fd].set_mode(LOCAL_OPER_USER_MODE, flag);
 				} else if (v[2][i] == 'r') {
 					_users[fd].set_mode(REGISTERED_USER_MODE, flag);

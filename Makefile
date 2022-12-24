@@ -1,5 +1,6 @@
 CC							=		c++
 CXXFLAG						=		-std=c++98 -Wall -Wextra -Werror
+LEAKFLAG					=		-g3 -fsanitize=address
 RM							=		rm
 
 NAME						=		ircserv
@@ -11,7 +12,6 @@ SRC_LIST					=		main.cpp\
 									Command.cpp\
 									Util.cpp\
 									Channel.cpp
-									
 
 
 SRC							=		$(addprefix $(SRC_DIR), $(SRC_LIST))
@@ -26,6 +26,10 @@ $(NAME)						:		$(OBJS)
 
 .PHONY						:		all
 all							:		$(NAME)
+
+.PHONY						:		leaks
+leaks 						:		$(NAME)
+		$(CC) $(CXXFLAG) $(LEAKFLAG) -I $(HEADER) $(OBJS) -o $(NAME)
 
 .PHONY						:		clean
 clean						:

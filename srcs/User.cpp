@@ -91,7 +91,7 @@ void User::set_mode(int mode, int flag) {
 			_is_admin = true;
 		}
 	} else if (flag == 1) {
-		_mode &= !mode;
+		_mode &= ~mode;
 		if (mode == OPER_USER_MODE) {
 			_is_admin = false;
 		}

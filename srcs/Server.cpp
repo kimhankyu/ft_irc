@@ -166,5 +166,4 @@ void Server::execute()
 Server::~Server()
 {
 	close(_server_socket);
-	close(_client_socket);
 }
