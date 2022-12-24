@@ -149,18 +149,11 @@ void Server::execute_command(std::string str, const int fd)
 
 void Server::execute()
 {
-	int n;
 	while (true) {
-		n = poll(_fds.data(), _fds.size(), TIMEOUT);
-		if (n == -1) {
-			perror("poll fail");
-			continue;;
-		} else if (n == 0) {
-			std::cerr << "poll time out\n";
-			continue;
+		if (poll(_fds.data(), _fds.size(), TIMEOUT)) {
+			if (_fds[0].revents & POLLIN) { accept_client(); }
+			echo_message();
 		}
-		if (_fds[0].revents & POLLIN) { accept_client(); }
-		echo_message();
 	}
 }
 
