@@ -14,6 +14,7 @@ void Server::cmd_pass(std::vector<std::string> &v, const int fd)
 		_users[fd].send_msg(ERR_ALREADYREGISTRED(_users[fd].get_nickname()));
 	} else if (_password != v[1]) {
 		_users[fd].send_msg(ERR_PASSWDMISMATCH(_users[fd].get_nickname()));
+		quit(fd, "missmatch password");
 	}
 }
 

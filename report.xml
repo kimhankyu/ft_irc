@@ -61,3 +61,27 @@
       <filesize>155</filesize>
       <tcpflow startime='2022-12-24T12:05:03.764172Z' endtime='2022-12-24T12:05:55.136579Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='49941' dstport='6667' packets='22' len='1387' />
     </fileobject>
+    <fileobject>
+      <filesize>0</filesize>
+      <tcpflow startime='2022-12-24T12:47:33.643986Z' endtime='2022-12-24T12:47:33.644354Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='6667' dstport='50249' packets='6' len='336' />
+    </fileobject>
+    <fileobject>
+      <filename>127.000.000.001.50366-127.000.000.001.06667</filename>
+      <filesize>156</filesize>
+      <tcpflow startime='2022-12-24T13:14:35.979344Z' endtime='2022-12-24T13:18:01.333071Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='50366' dstport='6667' packets='19' len='1220' />
+    </fileobject>
+    <fileobject>
+      <filename>127.000.000.001.50451-127.000.000.001.06667</filename>
+      <filesize>112</filesize>
+      <tcpflow startime='2022-12-24T13:24:58.582944Z' endtime='2022-12-24T13:25:02.522477Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='50451' dstport='6667' packets='13' len='840' />
+    </fileobject>
+    <fileobject>
+      <filename>127.000.000.001.50479-127.000.000.001.06667</filename>
+      <filesize>140</filesize>
+      <tcpflow startime='2022-12-24T13:31:44.010190Z' endtime='2022-12-24T13:33:58.084055Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='50479' dstport='6667' packets='18' len='1148' />
+    </fileobject>
+    <fileobject>
+      <filename>127.000.000.001.50504-127.000.000.001.06667</filename>
+      <filesize>66</filesize>
+      <tcpflow startime='2022-12-24T13:33:43.519166Z' endtime='2022-12-24T13:35:41.315003Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='50504' dstport='6667' packets='10' len='626' />
+    </fileobject>
