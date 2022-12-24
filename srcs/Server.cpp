@@ -150,10 +150,9 @@ void Server::execute_command(std::string str, const int fd)
 void Server::execute()
 {
 	while (true) {
-		if (poll(_fds.data(), _fds.size(), TIMEOUT)) {
-			if (_fds[0].revents & POLLIN) { accept_client(); }
-			echo_message();
-		}
+		poll(_fds.data(), _fds.size(), TIMEOUT);
+		if (_fds[0].revents & POLLIN) { accept_client(); }
+		echo_message();
 	}
 }
 
@@ -161,6 +160,3 @@ Server::~Server()
 {
 	close(_server_socket);
 }
-
-// TODO - topic
-// TODO - kick

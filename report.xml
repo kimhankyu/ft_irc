@@ -46,3 +46,13 @@
       <filesize>379</filesize>
       <tcpflow startime='2022-12-24T10:58:10.102733Z' endtime='2022-12-24T11:05:43.323702Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='49525' dstport='6667' packets='56' len='3515' />
     </fileobject>
+    <fileobject>
+      <filename>127.000.000.001.49809-127.000.000.001.06667</filename>
+      <filesize>71</filesize>
+      <tcpflow startime='2022-12-24T11:38:58.395020Z' endtime='2022-12-24T11:38:58.395790Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='49809' dstport='6667' packets='9' len='575' />
+    </fileobject>
+    <fileobject>
+      <filename>127.000.000.001.49808-127.000.000.001.06667</filename>
+      <filesize>120</filesize>
+      <tcpflow startime='2022-12-24T11:38:51.713246Z' endtime='2022-12-24T11:43:53.032242Z' mac_daddr='02:00:00:00:45:00' mac_saddr='00:40:00:00:40:00' family='2' src_ipn='127.0.0.1' dst_ipn='127.0.0.1' srcport='49808' dstport='6667' packets='22' len='1352' />
+    </fileobject>

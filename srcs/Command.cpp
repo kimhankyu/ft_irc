@@ -5,6 +5,7 @@
 #include <map>
 #include <iostream>
 
+//TODO - ㅍㅐ스워드 다를때 quit
 void Server::cmd_pass(std::vector<std::string> &v, const int fd)
 {
 	if (v.size() != 2) {
@@ -315,13 +316,10 @@ void Server::cmd_kick(std::vector<std::string> &v, const int fd)
 			_users[find_nickname(*it)->first].send_msg(ERR_NOTONCHANNEL(_users[find_nickname(*it)->first].get_nickname(), v[1]));
 			continue;
 		}
+		std::string str = ":" + _users[fd].get_fullname() + " KICK " + v[1] + " " + *it;
+		_channels[v[1]].send_msg(str + "\r\n");
 		_channels[v[1]].del_user(_users[find_nickname(*it)->first]);
 		_users[find_nickname(*it)->first].remove_channel(v[1]);
-		std::string str = ":" + _users[fd].get_fullname() + " KICK " + v[1] + " " + *it;
-		if (v.size() == 4) {
-			str += " :" + v[3];
-		}
-		_channels[v[1]].send_msg(str + "\r\n");
 	}
 }
 
