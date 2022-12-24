@@ -56,7 +56,7 @@ void Server::cmd_nick(std::vector<std::string> &v, const int fd)
 			quit(fd, _users[fd].get_nickname() + " " + v[1] + " :Nickname is already in use");
 		}
 	} else {
-		_users[fd].send_msg(RPL_NICK(_users[fd].get_nickname(), v[1]));
+		_users[fd].send_msg(RPL_NICK(_users[fd].get_fullname(), v[1]));
 		_users[fd].set_nickname(v[1]);
 		_nicknames[fd] = v[1];
 	}
@@ -184,7 +184,7 @@ void Server::cmd_join(std::vector<std::string> &v, const int fd)
 			if (v.size() == 3 && keyIndex < keyList.size()) ++keyIndex;
 		}
 		_users[fd].add_channel(*it);
-		_users[fd].send_msg(":" + _users[fd].get_nickname() + " JOIN " + *it + "\r\n");
+		_users[fd].send_msg(":" + _users[fd].get_fullname() + " JOIN " + *it + "\r\n");
 		if (_channels[*it].get_topic() != "") {
 			_users[fd].send_msg(RPL_TOPIC(_users[fd].get_nickname(), *it, _channels[*it].get_topic()));
 		}
@@ -257,7 +257,7 @@ void Server::cmd_topic(std::vector<std::string> &v, const int fd)
 		}
 		std::string topic = v[2].substr(0);
 		_channels[v[1]].set_topic(topic);
-		_channels[v[1]].send_msg(":" + _users[fd].get_nickname() + " TOPIC " + v[1] + " " + v[2] + "\r\n");
+		_channels[v[1]].send_msg(":" + _users[fd].get_fullname() + " TOPIC " + v[1] + " " + v[2] + "\r\n");
 	}
 }
 
@@ -419,7 +419,7 @@ void Server::cmd_mode(std::vector<std::string> &v, const int fd)
 void Server::cmd_privmsg(std::vector<std::string> &v, const int fd)
 {
 	if (v[1][0] == '#') {
-		_channels[v[1]].send_msg(":" + _users[fd].get_nickname()
+		_channels[v[1]].send_msg(":" + _users[fd].get_fullname()
 	 + " PRIVMSG " + v[1] + " :" + v[2] + "\r\n", _users[fd]);
 	} else {
 		std::map<int, std::string>::iterator itm = find_nickname(v[1]);
@@ -427,7 +427,7 @@ void Server::cmd_privmsg(std::vector<std::string> &v, const int fd)
 			_users[fd].send_msg(ERR_NOSUCHNICK(_users[fd].get_nickname(), v[1]));
 			return;
 		}
-		_users[itm->first].send_msg(":" + _users[fd].get_nickname()
+		_users[itm->first].send_msg(":" + _users[fd].get_fullname()
 		+ " PRIVMSG " + itm->second + " :" + v[2] + "\r\n");
 	}
 }
@@ -435,14 +435,14 @@ void Server::cmd_privmsg(std::vector<std::string> &v, const int fd)
 void Server::cmd_notice(std::vector<std::string> &v, const int fd)
 {
 	if (v[1][0] == '#') {
-		_channels[v[1]].send_msg(":" + _users[fd].get_nickname()
+		_channels[v[1]].send_msg(":" + _users[fd].get_fullname()
 	 + " NOTICE " + v[1] + " :" + v[2] + "\r\n", _users[fd]);
 	} else {
 		std::map<int, std::string>::iterator itm = find_nickname(v[1]);
 		if (itm == _nicknames.end()) {
 			return;
 		}
-		_users[itm->first].send_msg(":" + _users[fd].get_nickname()
+		_users[itm->first].send_msg(":" + _users[fd].get_fullname()
 		+ " NOTICE " + itm->second + " :" + v[2] + "\r\n");
 	}
 }
