@@ -54,7 +54,7 @@ void Channel::set_mode(int mode, int flag, std::string arg)
 	if (flag == 0) {
 		_mode |= mode;
 	} else if (flag == 1) {
-		_mode &= !mode;
+		_mode &= ~mode;
 	}
 	if (mode == KEY_CHANNEL_MODE) {
 		_key = arg;

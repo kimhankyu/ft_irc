@@ -232,7 +232,7 @@ void Server::cmd_topic(std::vector<std::string> &v, const int fd)
 		_users[fd].send_msg(ERR_NEEDMOREPARAMS(_users[fd].get_nickname(), v[0]));
 		return;
 	}
-	if (_channels.find(v[0]) == _channels.end()) {
+	if (_channels.find(v[1]) == _channels.end()) {
 		_users[fd].send_msg(ERR_NOSUCHCHANNEL(_users[fd].get_nickname(), v[1]));
 		return;
 	}
@@ -317,9 +317,9 @@ void Server::cmd_kick(std::vector<std::string> &v, const int fd)
 		}
 		_channels[v[1]].del_user(_users[find_nickname(*it)->first]);
 		_users[find_nickname(*it)->first].remove_channel(v[1]);
-		std::string str = ":ircserv " + v[0] + " " + v[1] + " " + *it;
+		std::string str = ":" + _users[fd].get_fullname() + " KICK " + v[1] + " " + *it;
 		if (v.size() == 4) {
-			str += ":" + v[3];
+			str += " :" + v[3];
 		}
 		_channels[v[1]].send_msg(str + "\r\n");
 	}
@@ -367,6 +367,7 @@ void Server::cmd_mode(std::vector<std::string> &v, const int fd)
 				_channels[v[1]].set_mode(KEY_CHANNEL_MODE, flag, v[3]);
 			} else {
 				_users[fd].send_msg(ERR_UMODEUNKNOWNFLAG(_users[fd].get_nickname()));
+				return;
 			}
 		}
 		std::string str = ":ircserv MODE " + v[1] + " " + v[2];

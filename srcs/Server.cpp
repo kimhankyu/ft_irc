@@ -161,3 +161,6 @@ Server::~Server()
 {
 	close(_server_socket);
 }
+
+// TODO - topic
+// TODO - kick
