@@ -40,6 +40,7 @@ private:
 	void accept_client();
 	void echo_message();
 	void execute_command(std::string str, const int fd);
+
 	/* Command.cpp */
 	void cmd_pass(std::vector<std::string> &v, const int fd);
 	void cmd_nick(std::vector<std::string> &v, const int fd);
@@ -47,12 +48,8 @@ private:
 	void cmd_user(std::vector<std::string> &v, const int fd);
 	void cmd_ping(std::vector<std::string> &v, const int fd);
 	void cmd_oper(std::vector<std::string> &v, const int fd);
-
-	/*
-	quit
-	*/
-
-
+	void cmd_quit(std::vector<std::string> &v, const int fd);
+	void quit(const int fd, const std::string reason);
 
 	void cmd_join(std::vector<std::string> &v, const int fd);
 	void cmd_part(std::vector<std::string> &v, const int fd);

@@ -83,24 +83,18 @@ void Server::echo_message()
 					perror("read fail");
 					exit(EXIT_FAILURE);
 				} else if (n == 0) {
-					//command quit
+					quit(_fds[i].fd, "");
 				}
 			} else {
 				buff[n] = '\0';
-				//command
 				std::vector<std::string> v = ft_split(std::string(buff), '\n');
 				for (std::vector<std::string>::iterator it = v.begin(); it != v.end(); ++it) {
 					execute_command(*it, _fds[i].fd);
 
 				}
-
-				// write
+				// TODO - write(지워질 예정)
 				std::cout << buff;
-
-
 			}
-
-
 		}
 	}
 }
@@ -134,7 +128,8 @@ void Server::execute_command(std::string str, const int fd)
 		cmd_ping(v, fd);
 	} else if (v[0] == "OPER") {
 		cmd_oper(v, fd);
-		//TODO - QUIT 추가 예정
+	} else if (v[0] == "QUIT") {
+		cmd_quit(v, fd);
 	} else if (v[0] == "JOIN") {
 		cmd_join(v, fd);
 	} else if (v[0] == "PART") {
@@ -151,13 +146,9 @@ void Server::execute_command(std::string str, const int fd)
 		cmd_privmsg(v, fd);
 	} else if (v[0] == "NOTICE") {
 		cmd_notice(v, fd);
+	} else if (v[0] == "KILL" || v[0] == "kill") {
+		cmd_kill(v, fd);
 	}
-	//TODO - cmd_kill
-
-
-
-
-
 }
 
 void Server::execute()

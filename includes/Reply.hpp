@@ -3,7 +3,7 @@
 
 /* ERR_REPLY */
 
-#define ERR_NOSUCHNICK(nick, nonExistant)				":ircserv 401 " + nick + " " + nonExistant + " :No such nick/channel\r\n"
+#define ERR_NOSUCHNICK(nick, nonExistant)				":ircserv 401 " + nick + " " + nonExistant + " :No such nick\r\n"
 #define ERR_NOSUCHSERVER(nick, severName)				":ircserv 402 " + nick + " " + serverName + " :No such server\r\n"
 #define ERR_NOSUCHCHANNEL(nick, channel)				":ircserv 403 " + nick + " " + channel + " :No such channel\r\n"
 #define ERR_TOOMANYCHANNELS(nick, channel)				":ircserv 405 " + nick + " " + channel + " :You have joined too many channels\r\n"
@@ -18,7 +18,8 @@
 #define ERR_ALREADYREGISTRED(nick)						":ircserv 462 " + nick + " :You may not reregister\r\n"
 #define ERR_PASSWDMISMATCH(nick)						":ircserv 464 " + nick + " :Password incorrect\r\n"
 #define ERR_INVITEONLYCHAN(nick, channel)				":ircserv 473 " + nick + " " + channel + " :Cannot join channel (+i)\r\n"
-#define ERR_BADCHANNELKEY(nick, channel)				":ircserv 475 " + nick + " " + channel + " ::Cannot join channel (+k)\r\n"
+#define ERR_BADCHANNELKEY(nick, channel)				":ircserv 475 " + nick + " " + channel + " :Cannot join channel (+k)\r\n"
+#define ERR_NOPRIVILEGES(nick)							":ircserv 481 " + nick + " :Permission Denied- You're not an IRC operator\r\n"
 #define ERR_CHANOPRIVSNEEDED(nick, channel)				":ircserv 482 " + nick + " " + channel + " :You're not channel operator\r\n"
 
 #define ERR_UMODEUNKNOWNFLAG(nick)						":ircserv 501 " + nick + " :Unknown MODE flag\r\n"

@@ -70,6 +70,9 @@ std::string User::get_mode() const {
 	return "+" + ret;
 }
 
+std::set<std::string> User::get_channels() const { return _channels; }
+
+
 int User::get_channels_num() const { return _channels.size(); }
 
 

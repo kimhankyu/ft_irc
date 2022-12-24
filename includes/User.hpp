@@ -42,6 +42,7 @@ public:
 	bool get_registered() const;
 	bool get_admin() const;
 	std::string get_mode() const;
+	std::set<std::string> get_channels() const;
 	
 	int get_channels_num() const;
 

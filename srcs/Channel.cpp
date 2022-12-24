@@ -86,7 +86,6 @@ bool Channel::is_key_same(const std::string str)
 	return str == _key;
 }
 
-
 void Channel::del_user(User u)
 {
 	std::vector<User>::iterator it = std::find(_userlist.begin(), _userlist.end(), u);

@@ -3,7 +3,6 @@
 #include "Reply.hpp"
 #include "Util.hpp"
 #include <map>
-
 #include <iostream>
 
 void Server::cmd_pass(std::vector<std::string> &v, const int fd)
@@ -16,10 +15,6 @@ void Server::cmd_pass(std::vector<std::string> &v, const int fd)
 		_users[fd].send_msg(ERR_PASSWDMISMATCH(_users[fd].get_nickname()));
 	}
 }
-
-/*
-클라이언트 꺼지면 닉네임 삭제
-*/
 
 static bool validateNick(std::string str)
 {
@@ -56,6 +51,9 @@ void Server::cmd_nick(std::vector<std::string> &v, const int fd)
 		_users[fd].send_msg(ERR_ERRONEUSNICKNAME(_users[fd].get_nickname(), v[1]));
 	} else if (find_nickname(v[1]) != _nicknames.end()) {
 		_users[fd].send_msg(ERR_NICKNAMEINUSE(_users[fd].get_nickname(), v[1]));
+		if (!_users[fd].get_registered()) {
+			quit(fd, _users[fd].get_nickname() + " " + v[1] + " :Nickname is already in use");
+		}
 	} else {
 		_users[fd].send_msg(RPL_NICK(_users[fd].get_nickname(), v[1]));
 		_users[fd].set_nickname(v[1]);
@@ -104,8 +102,39 @@ void Server::cmd_oper(std::vector<std::string> &v, const int fd)
 	}
 }
 
-//TODO - QUIT
+void Server::cmd_quit(std::vector<std::string> &v, const int fd)
+{
+	quit(fd, v[1]);
+}
 
+void Server::quit(const int fd, const std::string reason)
+{
+	std::string msg = ":" + _users[fd].get_fullname() + " QUIT :Quit: ";
+	if (reason == "") {
+		msg += "leaving\r\n";
+	} else {
+		msg += reason + "\r\n";
+	}
+	_users[fd].send_msg(msg);
+	std::set<std::string> uchannels = _users[fd].get_channels();
+	for (std::set<std::string>::iterator it = uchannels.begin(); it != uchannels.end(); ++it) {
+		_channels[*it].send_msg(msg);
+		_channels[*it].del_user(_users[fd]);
+		if (_channels[*it].get_user_num() == 0) {
+			_channels.erase(*it);
+		}
+		_users[fd].remove_channel(*it);
+	}
+	close(fd);
+	for (std::vector<struct pollfd>::iterator it = _fds.begin(); it != _fds.end(); ++it) {
+		if (it->fd == fd) {
+			_fds.erase(it);
+			break;
+		}
+	}
+	_nicknames.erase(fd);
+	_users.erase(fd);
+}
 
 void Server::cmd_join(std::vector<std::string> &v, const int fd)
 {
@@ -165,7 +194,7 @@ void Server::cmd_part(std::vector<std::string> &v, const int fd)
 {
 	if (v.size() < 2 || v.size() > 3) {
 		_users[fd].send_msg(ERR_NEEDMOREPARAMS(_users[fd].get_nickname(), v[0]));
-		return ;
+		return;
 	}
 	std::vector<std::string> chanList = ft_split(v[1], ',');
 	std::vector<std::string> reasonList;
@@ -413,10 +442,20 @@ void Server::cmd_notice(std::vector<std::string> &v, const int fd)
 	}
 }
 
-//TODO - cmd_kill
-// void Server::cmd_kill(std::vector<std::string> &v, const int fd)
-// {
-	
-// }
-
-
+void Server::cmd_kill(std::vector<std::string> &v, const int fd)
+{
+	if (_users[fd].get_admin() == false) {
+		_users[fd].send_msg(ERR_NOPRIVILEGES(_users[fd].get_nickname()));
+		return;
+	}
+	if (v.size() != 3) {
+		_users[fd].send_msg(ERR_NEEDMOREPARAMS(_users[fd].get_nickname(), v[0]));
+		return;
+	}
+	std::map<int, std::string>::iterator it = find_nickname(v[1]);
+	if (find_nickname(v[1]) == _nicknames.end()) {
+		_users[fd].send_msg(ERR_NOSUCHNICK(_users[fd].get_nickname(), v[1]));
+		return;
+	}
+	quit((*it).first, "Killed (" + _users[fd].get_nickname() + " (" + v[2] + "))\r\n");
+}
