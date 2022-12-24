@@ -9,8 +9,6 @@ Server::Server(int port, std::string password)
 {
 	socket_init();
 	pollfd_init();
-
-
 }
 
 void Server::socket_init()
@@ -90,9 +88,7 @@ void Server::echo_message()
 				std::vector<std::string> v = ft_split(std::string(buff), '\n');
 				for (std::vector<std::string>::iterator it = v.begin(); it != v.end(); ++it) {
 					execute_command(*it, _fds[i].fd);
-
 				}
-				// TODO - write(지워질 예정)
 				std::cout << buff;
 			}
 		}
@@ -156,8 +152,13 @@ void Server::execute()
 	int n;
 	while (true) {
 		n = poll(_fds.data(), _fds.size(), TIMEOUT);
-//TODO - poll err check
-
+		if (n == -1) {
+			perror("poll fail");
+			continue;;
+		} else if (n == 0) {
+			std::cerr << "poll time out\n";
+			continue;
+		}
 		if (_fds[0].revents & POLLIN) { accept_client(); }
 		echo_message();
 	}

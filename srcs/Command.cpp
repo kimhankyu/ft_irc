@@ -82,7 +82,6 @@ void Server::cmd_ping(std::vector<std::string> &v, const int fd)
 	if (v.size() == 1) {
 		_users[fd].send_msg(ERR_NOORIGIN);
 	} else {
-		//TODO - 시간 측정해서 시간 초과하면 quit 호출
 		_users[fd].send_msg("PONG " + v[1] + "\r\n");
 	}
 }

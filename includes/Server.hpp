@@ -33,7 +33,6 @@ private:
 	std::map<int, std::string> _nicknames;
 	std::map<std::string, Channel> _channels;
 
-
 	void socket_init();
 	void pollfd_init();
 	void create_poll(int fd);

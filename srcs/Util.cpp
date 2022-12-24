@@ -2,7 +2,6 @@
 #include <sstream>
 #include <vector>
 
-
 std::vector<std::string> ft_split(std::string str, char delim) {
 	std::stringstream ss(str);
 	std::string buffer;
