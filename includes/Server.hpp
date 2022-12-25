@@ -13,7 +13,6 @@
 #include "User.hpp"
 #include "Channel.hpp"
 
-#define TIMEOUT				1000
 #define MSG_LEN				512
 #define CHAN_USER_LIMIT		200
 #define OPER_NICK			"hankkim"

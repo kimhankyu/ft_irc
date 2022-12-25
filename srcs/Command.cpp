@@ -5,7 +5,6 @@
 #include <map>
 #include <iostream>
 
-//TODO - ㅍㅐ스워드 다를때 quit
 void Server::cmd_pass(std::vector<std::string> &v, const int fd)
 {
 	if (v.size() != 2) {
@@ -185,12 +184,12 @@ void Server::cmd_join(std::vector<std::string> &v, const int fd)
 			if (v.size() == 3 && keyIndex < keyList.size()) ++keyIndex;
 		}
 		_users[fd].add_channel(*it);
-		_users[fd].send_msg(":" + _users[fd].get_fullname() + " JOIN " + *it + "\r\n");
+		_channels[*it].send_msg(":" + _users[fd].get_fullname() + " JOIN " + *it + "\r\n");
 		if (_channels[*it].get_topic() != "") {
-			_users[fd].send_msg(RPL_TOPIC(_users[fd].get_nickname(), *it, _channels[*it].get_topic()));
+			_users[fd].send_msg(RPL_TOPIC(_users[fd].get_fullname(), *it, _channels[*it].get_topic()));
 		}
-		_users[fd].send_msg(RPL_NAMREPLY(_users[fd].get_nickname(), *it, _channels[*it].get_users()));
-		_users[fd].send_msg(RPL_ENDOFNAMES(_users[fd].get_nickname(), *it));
+		_users[fd].send_msg(RPL_NAMREPLY(_users[fd].get_fullname(), *it, _channels[*it].get_users()));
+		_users[fd].send_msg(RPL_ENDOFNAMES(_users[fd].get_fullname(), *it));
 	}
 }
 
@@ -346,14 +345,17 @@ void Server::cmd_mode(std::vector<std::string> &v, const int fd)
 			_users[fd].send_msg(str);
 			return;
 		}
-		if (!_channels[v[1]].is_operator(_users[fd])) {
-			_users[fd].send_msg(ERR_CHANOPRIVSNEEDED(_users[fd].get_nickname(), v[1]));
-			return;
-		}
 		int flag = 0;
 		for (size_t i = 0; i < v[2].size(); ++i) {
 			if (v[2][i] == '+') { flag = 0; continue; }
 			else if (v[2][i] == '-') { flag = 1; continue; }
+			if (v[2][i] == 'b') {
+				return;
+			}
+			if (!_channels[v[1]].is_operator(_users[fd])) {
+				_users[fd].send_msg(ERR_CHANOPRIVSNEEDED(_users[fd].get_nickname(), v[1]));
+				return;
+			}
 			if (v[2][i] == 'i') {
 				_channels[v[1]].set_mode(INVITE_ONLY_CHANNEL_MODE, flag);
 			} else if (v[2][i] == 't') {

@@ -33,8 +33,8 @@
 #define RPL_NOTOPIC(nick, channel)						":ircserv 331 " + nick + " " + channel + " :No topic is set\r\n"
 #define RPL_TOPIC(nick, channel, topic)					":ircserv 332 " + nick + " " + channel + " :" + topic + "\r\n"
 #define RPL_INVITING(client, nick, channel)				":ircserv 341 " + client + " " + nick + " " + channel + "\r\n"
-#define RPL_NAMREPLY(nick,channel,users)				":ircserv 353 " + nick + " = " + channel + " :" + users + "\r\n"
-#define RPL_ENDOFNAMES(nick,channel)					":ircserv 366 " + nick + " " + channel + " :End of /NAMES list\r\n"
+#define RPL_NAMREPLY(nick, channel, users)				":ircserv 353 " + nick + " = " + channel + " :" + users + "\r\n"
+#define RPL_ENDOFNAMES(nick, channel)					":ircserv 366 " + nick + " " + channel + " :End of NAMES list\r\n"
 #define RPL_YOUREOPER(nick)								":ircserv 381 " + nick + " :You are now an IRC operator\r\n"
 
 #endif

@@ -41,9 +41,13 @@ std::string Channel::get_users()
 	std::string ret = "";
 	std::vector<User>::iterator it = _userlist.begin();
 	for (; it != _userlist.end(); ++it) {
-		if (is_operator(*it))
+		if (it != _userlist.begin()) {
+			ret += " ";
+		}
+		if (is_operator(*it)) {
 			ret += "@";
-		ret += (*it).get_nickname() + " ";
+		}
+		ret += (*it).get_nickname();
 	}
 	return ret;
 }
