@@ -87,15 +87,16 @@ void Server::echo_message()
 				buff[n] = '\0';
 				std::vector<std::string> v = ft_split(std::string(buff), '\n');
 				for (std::vector<std::string>::iterator it = v.begin(); it != v.end(); ++it) {
-					execute_command(*it, _fds[i].fd);
+					if (!execute_command(*it, _fds[i].fd))
+						break;
 				}
-				std::cout << buff;
+				print_msg(std::to_string(_fds[i].fd), buff, 1);
 			}
 		}
 	}
 }
 
-void Server::execute_command(std::string str, const int fd)
+bool Server::execute_command(std::string str, const int fd)
 {
 	std::vector<std::string> ve;
 	size_t pos = str.find_first_of(':');
@@ -115,9 +116,11 @@ void Server::execute_command(std::string str, const int fd)
 	*it = it->substr(0, pos);
 
 	if (v[0] == "PASS") {
-		cmd_pass(v, fd);
+		if (!cmd_pass(v, fd))
+			return false;
 	} else if (v[0] == "NICK") {
-		cmd_nick(v, fd);
+		if (!cmd_nick(v, fd))
+			return false;
 	} else if (v[0] == "USER") {
 		cmd_user(v, fd);
 	} else if (v[0] == "PING") {
@@ -145,6 +148,7 @@ void Server::execute_command(std::string str, const int fd)
 	} else if (v[0] == "KILL" || v[0] == "kill") {
 		cmd_kill(v, fd);
 	}
+	return true;
 }
 
 void Server::execute()

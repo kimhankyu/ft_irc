@@ -10,4 +10,6 @@ bool isNumber(char c);
 bool isSpecial(char c);
 int convertPort(std::string str);
 bool channelCheck(std::string str);
+void print_msg(const std::string client, const std::string msg, const int flag);
+
 #endif

@@ -37,11 +37,12 @@ private:
 	void create_poll(int fd);
 	void accept_client();
 	void echo_message();
-	void execute_command(std::string str, const int fd);
+	bool execute_command(std::string str, const int fd);
+
 
 	/* Command.cpp */
-	void cmd_pass(std::vector<std::string> &v, const int fd);
-	void cmd_nick(std::vector<std::string> &v, const int fd);
+	bool cmd_pass(std::vector<std::string> &v, const int fd);
+	bool cmd_nick(std::vector<std::string> &v, const int fd);
 	std::map<int, std::string>::iterator find_nickname(std::string str);
 	void cmd_user(std::vector<std::string> &v, const int fd);
 	void cmd_ping(std::vector<std::string> &v, const int fd);

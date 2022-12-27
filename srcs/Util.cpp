@@ -1,6 +1,7 @@
 #include "Util.h"
 #include <sstream>
 #include <vector>
+#include <iostream>
 
 std::vector<std::string> ft_split(std::string str, char delim) {
 	std::stringstream ss(str);
@@ -54,4 +55,17 @@ bool channelCheck(std::string str)
 	if (str[0] != '#' || str.size() > 50)
 		return false;
 	return true;
+}
+
+void print_msg(const std::string client, const std::string msg, const int flag)
+{
+	std::string str = "";
+	std::cout << "=====================================\n";
+	if (flag == 0) {
+		str += "[Server]->[" + client + "] ";
+	} else {
+		str += "[" + client + "]->[Server] ";
+	}
+	str += msg;
+	std::cout << str;
 }

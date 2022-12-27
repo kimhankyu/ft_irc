@@ -5,7 +5,7 @@
 #include <map>
 #include <iostream>
 
-void Server::cmd_pass(std::vector<std::string> &v, const int fd)
+bool Server::cmd_pass(std::vector<std::string> &v, const int fd)
 {
 	if (v.size() != 2) {
 		_users[fd].send_msg(ERR_NEEDMOREPARAMS(_users[fd].get_nickname(), v[0]));
@@ -14,7 +14,9 @@ void Server::cmd_pass(std::vector<std::string> &v, const int fd)
 	} else if (_password != v[1]) {
 		_users[fd].send_msg(ERR_PASSWDMISMATCH(_users[fd].get_nickname()));
 		quit(fd, "missmatch password");
+		return false;
 	}
+	return true;
 }
 
 static bool validateNick(std::string str)
@@ -44,8 +46,12 @@ std::map<int, std::string>::iterator Server::find_nickname(std::string str)
 	return it;
 }
 
-void Server::cmd_nick(std::vector<std::string> &v, const int fd)
+bool Server::cmd_nick(std::vector<std::string> &v, const int fd)
 {
+	// std::cout << _nicknames.size() << "\n";
+	// for (std::map<int, std::string>::iterator it = _nicknames.begin(); it != _nicknames.end(); ++it) {
+	// 	std::cout << (*it).second << "\n";
+	// }
 	if (v.size() != 2) {
 		_users[fd].send_msg(ERR_NONICKNAMEGIVEN);
 	} else if (!validateNick(v[1])) {
@@ -54,12 +60,15 @@ void Server::cmd_nick(std::vector<std::string> &v, const int fd)
 		_users[fd].send_msg(ERR_NICKNAMEINUSE(_users[fd].get_nickname(), v[1]));
 		if (!_users[fd].get_registered()) {
 			quit(fd, _users[fd].get_nickname() + " " + v[1] + " :Nickname is already in use");
+			return false;
 		}
 	} else {
 		_users[fd].send_msg(RPL_NICK(_users[fd].get_fullname(), v[1]));
 		_users[fd].set_nickname(v[1]);
 		_nicknames[fd] = v[1];
+		return true;
 	}
+	return true;
 }
 
 void Server::cmd_user(std::vector<std::string> &v, const int fd)
